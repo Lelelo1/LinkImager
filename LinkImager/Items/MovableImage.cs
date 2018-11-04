@@ -1,40 +1,52 @@
 ﻿using System;
+using MR.Gestures;
 using Xamarin.Forms;
 namespace LinkImager.Items
 {
-    public class MovableImage : Image
+    public class MovableImage : MR.Gestures.Image
     {
-        AbsoluteLayout layout;
-        public MovableImage(AbsoluteLayout layout, Point intialPosition)
+        
+
+        MR.Gestures.AbsoluteLayout layout;
+        public MovableImage(MR.Gestures.AbsoluteLayout layout, Point intialPosition)
         {
             this.layout = layout;
             layout.Children.Add(this, intialPosition);
             this.Source = ImageSource.FromFile("camera.png");
+            Xamarin.Forms.Button b = new Xamarin.Forms.Button();
 
 
-            TapGestureRecognizer tapRecognizer = new TapGestureRecognizer();
-            tapRecognizer.Tapped += TapRecognizer_Tapped;
-            this.GestureRecognizers.Add(tapRecognizer);
-
-            PanGestureRecognizer panRecognizer = new PanGestureRecognizer();
-            panRecognizer.PanUpdated += PanRecognizer_PanUpdated;
-            this.GestureRecognizers.Add(panRecognizer);
+            this.Tapped += Handle_Tapped;
+            this.LongPressed += Handle_LongPressed;
+            this.Panning += Handle_Panning;
+            this.Swiped += Handle_Swiped;
         }
-
-        void TapRecognizer_Tapped(object sender, EventArgs e)
+        // touch eventshandlers...
+        void Handle_Tapped(object sender, TapEventArgs e)
         {
-
-
+            App.Current.MainPage.DisplayAlert("Tapped", " you tapped", "ok");
         }
 
-
-        void PanRecognizer_PanUpdated(object sender, PanUpdatedEventArgs e)
+        void Handle_LongPressed(object sender, LongPressEventArgs e)
         {
-            layout.RaiseChild(this);
-            Point point = new Point(AbsoluteLayout.GetLayoutBounds(this).X, AbsoluteLayout.GetLayoutBounds(this).Y);
-            point.Offset(e.TotalX, e.TotalY);
-            AbsoluteLayout.SetLayoutBounds(this, new Rectangle(point, new Size(this.WidthRequest, this.HeightRequest)));
+            App.Current.MainPage.DisplayAlert("LongPressed", " you longpressed", "ok");
         }
+
+        void Handle_Panning(object sender, PanEventArgs e)
+        {
+            Size size = MR.Gestures.AbsoluteLayout.GetLayoutBounds(this).Size;
+            Point point = new Point(MR.Gestures.AbsoluteLayout.GetLayoutBounds(this).X, MR.Gestures.AbsoluteLayout.GetLayoutBounds(this).Y);
+            Point newPoint = point.Offset(e.TotalDistance.X, e.TotalDistance.Y);
+            MR.Gestures.AbsoluteLayout.SetLayoutBounds(this, new Rectangle(newPoint, size));
+
+        }
+
+        void Handle_Swiped(object sender, SwipeEventArgs e)
+        {
+            App.Current.MainPage.DisplayAlert("Swiped", " you swiped", "ok");
+        }
+
+        // other methods
 
     }
 }

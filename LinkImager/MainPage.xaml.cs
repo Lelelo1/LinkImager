@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Xamarin.Forms;
 using Plugin.Media.Abstractions;
 using LinkImager.Items;
+using MR.Gestures;
+using Xamarin.Forms;
+
 namespace LinkImager
 {
-    public partial class MainPage : ContentPage
+    public partial class MainPage : Xamarin.Forms.ContentPage
     {
-        MediaFile mediaFile;
-
+        static bool isHandlingMoveableImage = false;
         public MainPage()
         {
             InitializeComponent();
@@ -22,8 +23,11 @@ namespace LinkImager
             MovableImage movableImage2 = new MovableImage(Absolute, new Point(180, 280));
             movableImage.WidthRequest = 50;
             movableImage.HeightRequest = 50;
+
         }
-
-
+        public void AssignGestures()
+        {
+            
+        }
     }
 }
