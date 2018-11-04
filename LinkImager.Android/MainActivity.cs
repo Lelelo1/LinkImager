@@ -20,7 +20,7 @@ namespace LinkImager.Droid
             base.OnCreate(savedInstanceState);
             CrossCurrentActivity.Current.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
-
+            MR.Gestures.Android.Settings.LicenseKey = "QY37-QU4R-YH9Q-C9NA-6MTS-J5CV-3WE7-MVA4-7FDE-ZF8K-U8GP-FK5R-W6XN";
             LoadApplication(new App());
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Android.Content.PM.Permission[] grantResults)
