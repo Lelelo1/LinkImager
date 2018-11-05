@@ -85,6 +85,7 @@
     <AndroidResource Include="Resources\mipmap-xxxhdpi\launcher_foreground.png" />
     <AndroidResource Include="Resources\xml\file_paths.xml" />
     <AndroidResource Include="Resources\drawable\camera.png" />
+    <AndroidResource Include="Resources\drawable\transparent.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\drawable\" />

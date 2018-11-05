@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ContentPage xmlns:mr="clr-namespace:MR.Gestures;assembly=MR.Gestures" xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:local="clr-namespace:LinkImager" x:Class="LinkImager.MainPage">
-    <mr:AbsoluteLayout x:Name="Absolute"/>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <mr:AbsoluteLayout x:Name="Absolute" Grid.Row="0" Grid.Column="0"/>
+        <StackLayout Grid.Row="0" Grid.Column="0" WidthRequest="80" HeightRequest="80" HorizontalOptions="EndAndExpand" VerticalOptions="StartAndExpand">
+            <Button x:Name="ActionButton" Text="Test" Clicked="Button_Clicked"/>
+        </StackLayout>
+    </Grid>
+    
 </ContentPage>

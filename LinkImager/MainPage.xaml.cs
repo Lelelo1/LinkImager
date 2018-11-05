@@ -7,7 +7,6 @@ using Plugin.Media.Abstractions;
 using LinkImager.Items;
 using MR.Gestures;
 using Xamarin.Forms;
-
 namespace LinkImager
 {
     public partial class MainPage : Xamarin.Forms.ContentPage
@@ -25,6 +24,27 @@ namespace LinkImager
             movableImage.HeightRequest = 50;
 
         }
+
+        bool isVisible = true;
+        void Button_Clicked(object sender, EventArgs e)
+        {
+            if (isVisible == true)
+                isVisible = false;
+            else
+                isVisible = true;
+            ToggleVisibilityOfMovableImages(isVisible);
+        }
+
+        private void ToggleVisibilityOfMovableImages(bool show)
+        {
+
+            var list = Absolute.Children.ToList().Select((arg) => (MovableImage)arg);
+            list.ToList().ForEach((MovableImage obj) => {
+                obj.isVisible(show);
+            });
+            // and also set visibility of those movableimages that arent in absolute
+        }
+
         public void AssignGestures()
         {
             

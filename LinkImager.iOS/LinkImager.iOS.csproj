@@ -160,5 +160,6 @@
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\camera.png" />
+    <BundleResource Include="Resources\transparent.png" />
   </ItemGroup>
 </Project>

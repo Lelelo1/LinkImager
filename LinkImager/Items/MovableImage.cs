@@ -5,7 +5,8 @@ namespace LinkImager.Items
 {
     public class MovableImage : MR.Gestures.Image
     {
-        
+
+        string imageUrl;
 
         MR.Gestures.AbsoluteLayout layout;
         public MovableImage(MR.Gestures.AbsoluteLayout layout, Point intialPosition)
@@ -21,19 +22,37 @@ namespace LinkImager.Items
         // Differentiating when movableImage is visible or not
         private void AssignEventHandlersWhenVisible()
         {
+            this.Tapped -= Handle_Tapped;
+            this.LongPressed -= Handle_LongPressed;
+            this.Panning -= Handle_Panning;
+            this.Swiped -= Handle_Swiped;
+            this.Tapped -= Handle_TappedWhenInVisible;
+
             this.Tapped += Handle_Tapped;
             this.LongPressed += Handle_LongPressed;
             this.Panning += Handle_Panning;
             this.Swiped += Handle_Swiped;
+
         }
-        private void AssignListenersWhenInVisible()
+        private void AssignEventHandlersWhenInVisible()
         {
-            this.Tapped += Handle_Tapped;
-            this.LongPressed += null;;
+            this.Tapped -= Handle_Tapped;
+            this.LongPressed -= Handle_LongPressed;
+            this.Panning -= Handle_Panning;
+            this.Swiped -= Handle_Swiped;
+            this.Tapped -= Handle_TappedWhenInVisible;
+
+            this.Tapped += Handle_TappedWhenInVisible;
+            this.LongPressed += null;
             this.Panning += null;
             this.Swiped += null;
         }
         // touch eventshandlers...
+        private void Handle_TappedWhenInVisible(object sender, TapEventArgs e)
+        {
+            App.Current.MainPage.DisplayAlert("Tapped", " you tapped invisible", "ok");
+        }
+
         void Handle_Tapped(object sender, TapEventArgs e)
         {
             App.Current.MainPage.DisplayAlert("Tapped", " you tapped", "ok");
@@ -58,11 +77,21 @@ namespace LinkImager.Items
             App.Current.MainPage.DisplayAlert("Swiped", " you swiped", "ok");
         }
         // other methods
-        public bool isVisible()
+ 
+        public void isVisible(bool show)
         {
-            double op = Math.Round(this.Opacity);
-            int opacity = Convert.ToInt32(op);
-            return opacity == 100 ? true : false;
+            if(show)
+            {
+                AssignEventHandlersWhenVisible();
+                this.Source = ImageSource.FromFile("camera.png"); // or load imageURL
+            }
+            else
+            {
+                // this.Opacity = 0.01;
+                this.Source = ImageSource.FromFile("transparent.png");
+                AssignEventHandlersWhenInVisible();
+
+            }
 
         }
     }
