@@ -18,6 +18,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Items\" />
+    <Folder Include="Model\" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Xamarin.iOS">

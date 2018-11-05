@@ -1,15 +1,17 @@
 ﻿using System;
+using System.Runtime.Serialization;
 using MR.Gestures;
 using Xamarin.Forms;
 namespace LinkImager.Items
 {
-    public class MovableImage : MR.Gestures.Image
+    
+	public class MovableImage : MR.Gestures.Image, ISerializable
     {
 
         string imageUrl;
 
         MR.Gestures.AbsoluteLayout layout;
-        public MovableImage(MR.Gestures.AbsoluteLayout layout, Point intialPosition)
+        public MovableImage(MR.Gestures.AbsoluteLayout layout, Point intialPosition, MovableImage owner)
         {
             this.layout = layout;
             layout.Children.Add(this, intialPosition);
@@ -92,7 +94,11 @@ namespace LinkImager.Items
                 AssignEventHandlersWhenInVisible();
 
             }
+        }
 
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            throw new NotImplementedException();
         }
     }
 }

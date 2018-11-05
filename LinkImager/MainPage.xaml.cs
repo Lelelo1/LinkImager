@@ -15,13 +15,21 @@ namespace LinkImager
         public MainPage()
         {
             InitializeComponent();
-            MovableImage movableImage = new MovableImage(Absolute, new Point(100, 400));
+
+
+            /*
+            MovableImage movableImage = new MovableImage(Absolute, new Point(100, 400), null);
             movableImage.WidthRequest = 50;
             movableImage.HeightRequest = 50;
 
-            MovableImage movableImage2 = new MovableImage(Absolute, new Point(180, 280));
+            MovableImage movableImage2 = new MovableImage(Absolute, new Point(180, 280), null);
             movableImage.WidthRequest = 50;
             movableImage.HeightRequest = 50;
+            */
+        }
+
+        public void Created(Rectangle rectangle)
+        {
 
         }
 
