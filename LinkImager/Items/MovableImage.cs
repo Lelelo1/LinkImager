@@ -15,11 +15,23 @@ namespace LinkImager.Items
             this.Source = ImageSource.FromFile("camera.png");
             Xamarin.Forms.Button b = new Xamarin.Forms.Button();
 
+            AssignEventHandlersWhenVisible();
+        }
 
+        // Differentiating when movableImage is visible or not
+        private void AssignEventHandlersWhenVisible()
+        {
             this.Tapped += Handle_Tapped;
             this.LongPressed += Handle_LongPressed;
             this.Panning += Handle_Panning;
             this.Swiped += Handle_Swiped;
+        }
+        private void AssignListenersWhenInVisible()
+        {
+            this.Tapped += Handle_Tapped;
+            this.LongPressed += null;;
+            this.Panning += null;
+            this.Swiped += null;
         }
         // touch eventshandlers...
         void Handle_Tapped(object sender, TapEventArgs e)
@@ -45,8 +57,13 @@ namespace LinkImager.Items
         {
             App.Current.MainPage.DisplayAlert("Swiped", " you swiped", "ok");
         }
-
         // other methods
+        public bool isVisible()
+        {
+            double op = Math.Round(this.Opacity);
+            int opacity = Convert.ToInt32(op);
+            return opacity == 100 ? true : false;
 
+        }
     }
 }
