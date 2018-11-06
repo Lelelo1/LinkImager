@@ -4,7 +4,6 @@ using System.Runtime.Serialization.Formatters.Binary;
 using LinkImager.Items;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Xamarin.Forms;
-
 namespace Testing
 {
     [TestClass]
@@ -14,12 +13,13 @@ namespace Testing
         [TestMethod]
         public void Serialize()
         {
+            MR.Gestures.AbsoluteLayout absolute = new MR.Gestures.AbsoluteLayout();
             MovableImage project = new MovableImage("branch.jpg");
-            MovableImage movableImage = new MovableImage(project, new Xamarin.Forms.Rectangle(new Point(0, 0), new Size(40, 40)));
+            MovableImage movableImage = new MovableImage(absolute, project, new Xamarin.Forms.Rectangle(new Point(0, 0), new Size(40, 40)));
             project.children.Add(movableImage);
-            MovableImage childImage = new MovableImage(movableImage, new Rectangle(new Point(200, 300), new Size(120, 120)));
+            MovableImage childImage = new MovableImage(absolute, movableImage, new Rectangle(new Point(200, 300), new Size(120, 120)));
             movableImage.children.Add(childImage);
-            MovableImage otherChildImage = new MovableImage(movableImage, new Rectangle(new Point(80, 100), new Size(70, 60)));
+            MovableImage otherChildImage = new MovableImage(absolute, movableImage, new Rectangle(new Point(80, 100), new Size(70, 60)));
             movableImage.children.Add(otherChildImage);
 
             Stream stream = File.Open("project.ii", FileMode.Create);

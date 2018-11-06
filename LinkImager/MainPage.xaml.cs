@@ -15,6 +15,7 @@ namespace LinkImager
         static MR.Gestures.AbsoluteLayout absolute;
         public static MovableImage project;
         static MovableImage nowLinkImage;
+        static MR.Gestures.Image backgroundImage;
         public MainPage()
         {
             InitializeComponent();
@@ -22,10 +23,11 @@ namespace LinkImager
             absolute = Absolute;
             // if not load project data file
             project = new MovableImage("branch.jpg");
-            contentPage.BackgroundImage = project.imageUrl;
+            backgroundimage.Source = ImageSource.FromFile(project.imageUrl);
             absolute.BackgroundColor = Color.Transparent; 
             nowLinkImage = project;
-
+            backgroundImage = backgroundimage;
+            this.BackgroundColor = Color.Black;
             AssignGestures();
 
             // serialize
@@ -36,7 +38,8 @@ namespace LinkImager
         {
             absolute.Children.Clear();
             nowLinkImage = movableImage;
-            contentPage.BackgroundImage = nowLinkImage.imageUrl;
+            backgroundImage.Source = ImageSource.FromUri(new Uri(nowLinkImage.imageUrl));
+
             if(nowLinkImage.children.Count > 0)
                 nowLinkImage.children.ForEach((MovableImage obj) =>
             {
@@ -49,14 +52,17 @@ namespace LinkImager
         }
         public void Create(Rectangle rectangle)
         {
-
+            /*
             MovableImage movableImage = new MovableImage(absolute, nowLinkImage, rectangle);
             MovableImage childImage = new MovableImage(absolute, movableImage, new Rectangle(new Point(200, 300), new Size(120, 120)));
             movableImage.children.Add(childImage);
             MovableImage otherChildImage = new MovableImage(absolute, movableImage, new Rectangle(new Point(80, 100), new Size(70, 60)));
             movableImage.children.Add(otherChildImage);
+            */
+            MovableImage child = new MovableImage(absolute, nowLinkImage, rectangle);
+            nowLinkImage.children.Add(child);
+            Paint(child);
 
-            Paint(movableImage);
         }
 
         bool isVisible = true;
@@ -86,7 +92,7 @@ namespace LinkImager
             Absolute.Tapped += Absolute_Tapped;
             Absolute.LongPressed += Absolute_LongPressed;
             Absolute.Panned += Absolute_Panned;
-
+            Absolute.Swiped += Absolute_Swiped;
         }
         // used to give panned a start x y position
         private DownUpEventArgs down;
@@ -121,12 +127,19 @@ namespace LinkImager
             {
                 // action occured on movable image and is handled there
             } 
-
-                
         }
+        void Absolute_Swiped(object sender, SwipeEventArgs e)
+        {
+            if(actionOrigin == null)
+            {
+                // action occured on absolute
 
-
-
+            }
+            else
+            {
+                // action occured on movable image and is handled there
+            }
+        }
 
     }
 }

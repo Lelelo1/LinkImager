@@ -10,6 +10,7 @@ namespace LinkImager
         public AppBar(Page page) : base(page)
         {
             InitializeComponent();
+            this.BarBackgroundColor = Color.Black;
         }
 
         async void Handle_Clicked(object sender, System.EventArgs e)
@@ -50,8 +51,9 @@ namespace LinkImager
 
 
             }
-
-
+        }
+        public void setBackButton()
+        {
 
         }
     }

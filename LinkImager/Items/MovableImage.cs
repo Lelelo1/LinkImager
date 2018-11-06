@@ -33,23 +33,54 @@ namespace LinkImager.Items
         // Differentiating when movableImage is visible or not
         private void AssignEventHandlersWhenVisible()
         {
+            if(Device.RuntimePlatform == Device.Android)
+            {
+                this.Down -= Handle_Down;
+                this.Tapped -= Handle_Tapped;
+                this.LongPressed -= Handle_LongPressed;
+                this.Tapped -= Handle_TappedWhenInVisible;
 
-            this.Down -= Handle_Down;
-            this.Tapped -= Handle_Tapped;
-            this.LongPressed -= Handle_LongPressed;
-            this.Tapped -= Handle_TappedWhenInVisible;
+                this.Down += Handle_Down;
+                this.Tapped += Handle_Tapped;
+                this.LongPressed += Handle_LongPressed;
+            }
+            else
+            {
+                this.Down -= Handle_DowniOS;
+                this.Up -= Handle_UpiOS;
+                this.Tapped -= Handle_Tapped;
+                this.Tapped -= Handle_TappedWhenInVisible;
+                this.LongPressed -= Handle_LongPressed;
+                this.Panning -= Handle_Panning;
+                this.Swiped -= Handle_Swiped;
 
-            this.Down += Handle_Down;
-            this.Tapped += Handle_Tapped;
-            this.LongPressed += Handle_LongPressed;
+                this.Down += Handle_DowniOS;
+                this.Up += Handle_UpiOS;
+                this.Tapped += Handle_Tapped;
+                this.LongPressed += Handle_LongPressed;
+                this.Panning += Handle_Panning;
+                this.Swiped += Handle_Swiped;
+            }
 
         }
+
+        void Handle_Up2(object sender, DownUpEventArgs e)
+        {
+        }
+
+
         private void AssignEventHandlersWhenInVisible()
         {
             this.Down -= Handle_Down;
             this.Tapped -= Handle_Tapped;
             this.LongPressed -= Handle_LongPressed;
             this.Tapped -= Handle_TappedWhenInVisible;
+            this.Down -= Handle_DowniOS;
+
+            this.Panning -= Handle_Panning;
+            this.Swiped -= Handle_Swiped;
+
+
 
             this.Tapped += Handle_TappedWhenInVisible;
             this.LongPressed += null;
@@ -59,22 +90,51 @@ namespace LinkImager.Items
         private void Handle_TappedWhenInVisible(object sender, TapEventArgs e)
         {
             App.Current.MainPage.DisplayAlert("Tapped", " you tapped invisible", "ok");
-            /*
+
             if(imageUrl != null)
+            {
                 MainPage.Display(this);
-            */
-            MainPage.Display(this);
+            }
+                
+                
         }
+
+        void Handle_DowniOS(object sender, DownUpEventArgs e)
+        {
+            MainPage.actionOrigin = this;
+
+        }
+
 
         // dragging is listened for on absolute when down on this
         void Handle_Down(object sender, DownUpEventArgs e)
         {
             MainPage.actionOrigin = this;
-            absolute.Panning += Absolute_Panning;
-            absolute.Swiped += Absolute_Swiped;
-            absolute.Up += Absolute_Up;
+            if(Device.RuntimePlatform == Device.Android)
+            {
+                absolute.Panning += Absolute_Panning;
+                absolute.Swiped += Absolute_Swiped;
+                absolute.Up += Absolute_Up;
+            }
+
+
         }
+
+        void Handle_UpiOS(object sender, DownUpEventArgs e)
+        {
+            MainPage.actionOrigin = null;
+        }
+
+
         // deselect
+        void Handle_Up(object sender, DownUpEventArgs e)
+        {
+            MainPage.actionOrigin = null;
+            this.Panning -= Handle_Panning;
+            this.Swiped -= Handle_Swiped;
+            this.Up -= Handle_Up;
+        }
+
         void Absolute_Up(object sender, DownUpEventArgs e)
         {
             MainPage.actionOrigin = null;
@@ -85,14 +145,31 @@ namespace LinkImager.Items
         }
 
 
-        void Handle_Tapped(object sender, TapEventArgs e)
+        async void Handle_Tapped(object sender, TapEventArgs e)
         {
-            App.Current.MainPage.DisplayAlert("Tapped", " you tapped", "ok");
+            // App.Current.MainPage.DisplayAlert("Tapped", " you tapped", "ok");
+            if(imageUrl == null)
+            {
+                Plugin.Media.Abstractions.MediaFile mediaFile = await Actions.TakePhoto();
+                if (mediaFile != null)
+                {
+                    Azure azure = new Azure();
+                    string url = await azure.UploadFileToStorage(mediaFile.GetStream());
+                    this.imageUrl = url;
+                    this.Source = ImageSource.FromUri(new Uri(url));
+                    isVisible(false);
+                }
+            }
+            else
+            {
+                // do what when tapping shown, display context menu - open image
+                // in editor
+            }
         }
 
         void Handle_LongPressed(object sender, LongPressEventArgs e)
         {
-            App.Current.MainPage.DisplayAlert("LongPressed", " you longpressed", "ok");
+            // App.Current.MainPage.DisplayAlert("LongPressed", " you longpressed", "ok");
         }
 
         //using absolute pan cordinate then used by this
@@ -103,11 +180,24 @@ namespace LinkImager.Items
         void Handle_Panning(object sender, PanEventArgs e)
         {
 
-            Size size = MR.Gestures.AbsoluteLayout.GetLayoutBounds(this).Size;
-            Point point = new Point(MR.Gestures.AbsoluteLayout.GetLayoutBounds(this).X, MR.Gestures.AbsoluteLayout.GetLayoutBounds(this).Y);
-            Point newPoint = point.Offset(e.DeltaDistance.X, e.DeltaDistance.Y);
-            MR.Gestures.AbsoluteLayout.SetLayoutBounds(this, new Rectangle(newPoint, size));
-            rectangle = new Rectangle(newPoint, rectangle.Size);
+            if(Device.RuntimePlatform == Device.Android)
+            {
+                Size size = MR.Gestures.AbsoluteLayout.GetLayoutBounds(this).Size;
+                Point point = new Point(MR.Gestures.AbsoluteLayout.GetLayoutBounds(this).X, MR.Gestures.AbsoluteLayout.GetLayoutBounds(this).Y);
+                Point newPoint = point.Offset(e.DeltaDistance.X, e.DeltaDistance.Y);
+                MR.Gestures.AbsoluteLayout.SetLayoutBounds(this, new Rectangle(newPoint, size));
+                absolute.RaiseChild(this);
+                rectangle = new Rectangle(newPoint, rectangle.Size);
+            }
+            else if(Device.RuntimePlatform == Device.iOS)
+            {
+                Size size = MR.Gestures.AbsoluteLayout.GetLayoutBounds(this).Size;
+                Point point = new Point(MR.Gestures.AbsoluteLayout.GetLayoutBounds(this).X, MR.Gestures.AbsoluteLayout.GetLayoutBounds(this).Y);
+                Point newPoint = point.Offset(e.TotalDistance.X, e.TotalDistance.Y);
+                MR.Gestures.AbsoluteLayout.SetLayoutBounds(this, new Rectangle(newPoint, size));
+                absolute.RaiseChild(this);
+                rectangle = new Rectangle(newPoint, rectangle.Size);
+            }
         }
 
         void Absolute_Swiped(object sender, SwipeEventArgs e)
@@ -127,7 +217,14 @@ namespace LinkImager.Items
             if(show)
             {
                 AssignEventHandlersWhenVisible();
-                this.Source = ImageSource.FromFile("camera.png"); // or load imageURL
+                if(imageUrl == null)
+                {
+                    this.Source = ImageSource.FromFile("camera.png");
+                }
+                else
+                {
+                    this.Source = ImageSource.FromUri(new Uri(imageUrl));
+                }
             }
             else
             {

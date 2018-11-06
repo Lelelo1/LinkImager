@@ -11,7 +11,7 @@ namespace LinkImager
         {
             InitializeComponent();
 
-            MainPage = new AppBar(new MainPage());
+            MainPage = new AppBar(new Tabbed());
         }
 
         protected override void OnStart()
