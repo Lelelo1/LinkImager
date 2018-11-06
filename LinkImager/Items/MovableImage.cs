@@ -13,13 +13,15 @@ namespace LinkImager.Items
         public string imageUrl;
         public List<MovableImage> children = new List<MovableImage>();
         public Rectangle rectangle;
+        MR.Gestures.AbsoluteLayout absolute;
         public MovableImage(string imageUrl)
         {
             this.imageUrl = imageUrl;
         }
 
-        public MovableImage(MovableImage owner, Rectangle rectangle)
+        public MovableImage(MR.Gestures.AbsoluteLayout absolute, MovableImage owner, Rectangle rectangle)
         {
+            this.absolute = absolute;
             this.owner = owner;
             this.Source = ImageSource.FromFile("camera.png");
             this.rectangle = rectangle;
@@ -31,39 +33,57 @@ namespace LinkImager.Items
         // Differentiating when movableImage is visible or not
         private void AssignEventHandlersWhenVisible()
         {
+
+            this.Down -= Handle_Down;
             this.Tapped -= Handle_Tapped;
             this.LongPressed -= Handle_LongPressed;
-            this.Panning -= Handle_Panning;
-            this.Swiped -= Handle_Swiped;
             this.Tapped -= Handle_TappedWhenInVisible;
 
+            this.Down += Handle_Down;
             this.Tapped += Handle_Tapped;
             this.LongPressed += Handle_LongPressed;
-            this.Panning += Handle_Panning;
-            this.Swiped += Handle_Swiped;
 
         }
         private void AssignEventHandlersWhenInVisible()
         {
+            this.Down -= Handle_Down;
             this.Tapped -= Handle_Tapped;
             this.LongPressed -= Handle_LongPressed;
-            this.Panning -= Handle_Panning;
-            this.Swiped -= Handle_Swiped;
             this.Tapped -= Handle_TappedWhenInVisible;
 
             this.Tapped += Handle_TappedWhenInVisible;
             this.LongPressed += null;
-            this.Panning += null;
             this.Swiped += null;
         }
         // touch eventshandlers...
         private void Handle_TappedWhenInVisible(object sender, TapEventArgs e)
         {
             App.Current.MainPage.DisplayAlert("Tapped", " you tapped invisible", "ok");
+            /*
             if(imageUrl != null)
                 MainPage.Display(this);
-
+            */
+            MainPage.Display(this);
         }
+
+        // dragging is listened for on absolute when down on this
+        void Handle_Down(object sender, DownUpEventArgs e)
+        {
+            MainPage.actionOrigin = this;
+            absolute.Panning += Absolute_Panning;
+            absolute.Swiped += Absolute_Swiped;
+            absolute.Up += Absolute_Up;
+        }
+        // deselect
+        void Absolute_Up(object sender, DownUpEventArgs e)
+        {
+            MainPage.actionOrigin = null;
+            absolute.Panning -= Absolute_Panning;
+            absolute.Up -= Absolute_Up;
+            absolute.Swiped -= Absolute_Swiped;
+            // App.Current.MainPage.DisplayAlert("Up", "Absolute up", "ok");
+        }
+
 
         void Handle_Tapped(object sender, TapEventArgs e)
         {
@@ -75,14 +95,26 @@ namespace LinkImager.Items
             App.Current.MainPage.DisplayAlert("LongPressed", " you longpressed", "ok");
         }
 
+        //using absolute pan cordinate then used by this
+        void Absolute_Panning(object sender, PanEventArgs e)
+        {
+            Handle_Panning(sender, e);
+        }
         void Handle_Panning(object sender, PanEventArgs e)
         {
+
             Size size = MR.Gestures.AbsoluteLayout.GetLayoutBounds(this).Size;
             Point point = new Point(MR.Gestures.AbsoluteLayout.GetLayoutBounds(this).X, MR.Gestures.AbsoluteLayout.GetLayoutBounds(this).Y);
-            Point newPoint = point.Offset(e.TotalDistance.X, e.TotalDistance.Y);
+            Point newPoint = point.Offset(e.DeltaDistance.X, e.DeltaDistance.Y);
             MR.Gestures.AbsoluteLayout.SetLayoutBounds(this, new Rectangle(newPoint, size));
             rectangle = new Rectangle(newPoint, rectangle.Size);
         }
+
+        void Absolute_Swiped(object sender, SwipeEventArgs e)
+        {
+            Handle_Swiped(sender, e);
+        }
+
 
         void Handle_Swiped(object sender, SwipeEventArgs e)
         {
