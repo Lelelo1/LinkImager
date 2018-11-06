@@ -161,5 +161,9 @@
   <ItemGroup>
     <BundleResource Include="Resources\camera.png" />
     <BundleResource Include="Resources\transparent.png" />
+    <BundleResource Include="Resources\branch.jpg" />
+    <BundleResource Include="Resources\share%403x.png" />
+    <BundleResource Include="Resources\share%402x.png" />
+    <BundleResource Include="Resources\share.png" />
   </ItemGroup>
 </Project>

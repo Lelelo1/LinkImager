@@ -11,26 +11,52 @@ namespace LinkImager
 {
     public partial class MainPage : Xamarin.Forms.ContentPage
     {
-        static bool isHandlingMoveableImage = false;
+        static Xamarin.Forms.ContentPage contentPage;
+        static MR.Gestures.AbsoluteLayout absolute;
+        public static MovableImage project;
+        static MovableImage nowLinkImage;
         public MainPage()
         {
             InitializeComponent();
+            contentPage = this;
+            absolute = Absolute;
+            // if not load project data file
+            project = new MovableImage("branch.jpg");
+            contentPage.BackgroundImage = project.imageUrl;
+            absolute.BackgroundColor = Color.Transparent; 
+            nowLinkImage = project;
+
+            AssignGestures();
+
+            // serialize
 
 
-            /*
-            MovableImage movableImage = new MovableImage(Absolute, new Point(100, 400), null);
-            movableImage.WidthRequest = 50;
-            movableImage.HeightRequest = 50;
-
-            MovableImage movableImage2 = new MovableImage(Absolute, new Point(180, 280), null);
-            movableImage.WidthRequest = 50;
-            movableImage.HeightRequest = 50;
-            */
         }
-
-        public void Created(Rectangle rectangle)
+        public static void Display(MovableImage movableImage)
+        {
+            absolute.Children.Clear();
+            nowLinkImage = movableImage;
+            contentPage.BackgroundImage = nowLinkImage.imageUrl;
+            if(nowLinkImage.children.Count > 0)
+                nowLinkImage.children.ForEach((MovableImage obj) =>
+            {
+                Paint(obj);
+            });
+        }
+        private static void Paint(MovableImage child)
+        {
+            absolute.Children.Add(child, child.rectangle);
+        }
+        public void Create(Rectangle rectangle)
         {
 
+            MovableImage movableImage = new MovableImage(nowLinkImage, rectangle);
+            MovableImage childImage = new MovableImage(movableImage, new Rectangle(new Point(200, 300), new Size(120, 120)));
+            movableImage.children.Add(childImage);
+            MovableImage otherChildImage = new MovableImage(movableImage, new Rectangle(new Point(80, 100), new Size(70, 60)));
+            movableImage.children.Add(otherChildImage);
+
+            Paint(movableImage);
         }
 
         bool isVisible = true;
@@ -55,7 +81,14 @@ namespace LinkImager
 
         public void AssignGestures()
         {
-            
+            Absolute.LongPressed += Absolute_LongPressed;
         }
+
+        void Absolute_LongPressed(object sender, LongPressEventArgs e)
+        {
+            App.Current.MainPage.DisplayAlert("LongPressed", "LongPressed aboslute", "ok");
+            Create(new Rectangle(new Point(100, 300), new Size(120, 120)));
+        }
+
     }
 }
