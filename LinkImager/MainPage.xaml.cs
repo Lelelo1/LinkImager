@@ -82,7 +82,24 @@ namespace LinkImager
         public static MovableImage actionOrigin = null;
         public void AssignGestures()
         {
+            Absolute.Down += Absolute_Down;
+            Absolute.Tapped += Absolute_Tapped;
             Absolute.LongPressed += Absolute_LongPressed;
+            Absolute.Panned += Absolute_Panned;
+
+        }
+        // used to give panned a start x y position
+        private DownUpEventArgs down;
+        void Absolute_Down(object sender, DownUpEventArgs e)
+        {
+            down = e;
+
+        }
+
+
+        void Absolute_Tapped(object sender, TapEventArgs e)
+        {
+
         }
 
         void Absolute_LongPressed(object sender, LongPressEventArgs e)
@@ -90,6 +107,26 @@ namespace LinkImager
             App.Current.MainPage.DisplayAlert("LongPressed", "LongPressed aboslute", "ok");
             Create(new Rectangle(new Point(100, 300), new Size(120, 120)));
         }
+
+        void Absolute_Panned(object sender, PanEventArgs e)
+        {
+            if (actionOrigin == null)
+            {
+                // action occured on absolute
+                Rectangle rectangle = new Rectangle(new Point(down.Touches[0].X, down.Touches[0].Y), new Size(e.TotalDistance.X, e.TotalDistance.Y));
+
+                Create(rectangle);
+            }
+            else
+            {
+                // action occured on movable image and is handled there
+            } 
+
+                
+        }
+
+
+
 
     }
 }
