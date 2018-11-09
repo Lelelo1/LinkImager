@@ -3,5 +3,4 @@
     <NavigationPage.ToolbarItems>
         <ToolbarItem Icon="share.png" Clicked="Handle_Clicked"/>
     </NavigationPage.ToolbarItems>
-    
 </NavigationPage>

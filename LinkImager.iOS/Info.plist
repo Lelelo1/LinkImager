@@ -37,6 +37,35 @@
 	<key>NSCameraUsageDescription</key>
 	<string>This app needs to access the camera so that you can make linkimages</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This app needs to access the photo galery so that you make linkimages from existing photos</string>
+	<string>This app needs to access the photo gallery so that you make linkimages from existing photos</string>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeDescription</key>
+			<string>LinkImager project file</string>
+			<key>UTTypeIdentifier</key>
+			<string>oel.kerettew.LinkImager.ii</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<string>ii</string>
+			</dict>
+		</dict>
+	</array>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>oel.kerettew.LinkImager.ii</string>
+			</array>
+			<key>LSHandlerRank</key>
+			<string>Owner</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleTypeName</key>
+			<string>LinkImager file</string>
+		</dict>
+	</array>
 </dict>
 </plist>

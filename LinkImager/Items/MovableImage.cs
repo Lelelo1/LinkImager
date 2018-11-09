@@ -9,7 +9,7 @@ namespace LinkImager.Items
 	public class MovableImage : MR.Gestures.Image, ISerializable
     {
 
-        MovableImage owner;
+        public MovableImage owner;
         public string imageUrl;
         public List<MovableImage> children = new List<MovableImage>();
         public Rectangle rectangle;
@@ -89,7 +89,7 @@ namespace LinkImager.Items
         // touch eventshandlers...
         private void Handle_TappedWhenInVisible(object sender, TapEventArgs e)
         {
-            App.Current.MainPage.DisplayAlert("Tapped", " you tapped invisible", "ok");
+            // App.Current.MainPage.DisplayAlert("Tapped", " you tapped invisible", "ok");
 
             if(imageUrl != null)
             {
@@ -101,6 +101,7 @@ namespace LinkImager.Items
 
         void Handle_DowniOS(object sender, DownUpEventArgs e)
         {
+
             MainPage.actionOrigin = this;
 
         }
@@ -122,14 +123,15 @@ namespace LinkImager.Items
 
         void Handle_UpiOS(object sender, DownUpEventArgs e)
         {
-            MainPage.actionOrigin = null;
+            // previously unset actionOrigin
+            // but occurs prior to panned in absolute
+
         }
 
 
         // deselect
         void Handle_Up(object sender, DownUpEventArgs e)
         {
-            MainPage.actionOrigin = null;
             this.Panning -= Handle_Panning;
             this.Swiped -= Handle_Swiped;
             this.Up -= Handle_Up;
@@ -137,7 +139,6 @@ namespace LinkImager.Items
 
         void Absolute_Up(object sender, DownUpEventArgs e)
         {
-            MainPage.actionOrigin = null;
             absolute.Panning -= Absolute_Panning;
             absolute.Up -= Absolute_Up;
             absolute.Swiped -= Absolute_Swiped;
@@ -165,6 +166,7 @@ namespace LinkImager.Items
                 // do what when tapping shown, display context menu - open image
                 // in editor
             }
+            MainPage.actionOrigin = null;
         }
 
         void Handle_LongPressed(object sender, LongPressEventArgs e)
@@ -255,6 +257,16 @@ namespace LinkImager.Items
             double width = (double)info.GetValue("width", typeof(double));
             double height = (double)info.GetValue("height", typeof(double));
             rectangle = new Rectangle(new Point(x, y), new Size(width, height));
+        }
+        // getting the ultimate owner
+        public MovableImage GetProject()
+        {
+            MovableImage temp = owner;
+            while(temp.owner != null)
+            {
+                temp = temp.owner;
+            }
+            return temp;
         }
     }
 }

@@ -28,5 +28,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="AppBar.cs" />
+    <Compile Remove="MovableImageExtension.cs" />
   </ItemGroup>
 </Project>
