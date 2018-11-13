@@ -13,10 +13,11 @@ namespace LinkImager
     {
         public static MainPage mainPage;
         static Xamarin.Forms.ContentPage contentPage;
-        static MR.Gestures.AbsoluteLayout absolute;
+        public static MR.Gestures.AbsoluteLayout absolute;
         public static MovableImage nowLinkImage;
         static MR.Gestures.Image backgroundImage;
         private static string standardImageName = "branch.jpg";
+        public static string projectUrl;
         public MainPage()
         {
             InitializeComponent();
@@ -33,6 +34,29 @@ namespace LinkImager
             mainPage = this;
             // serialize
         }
+        public MainPage(string projectUrl)
+        {
+            
+            InitializeComponent();
+            contentPage = this;
+            absolute = Absolute;
+            // if not load project data file
+            absolute.BackgroundColor = Color.Transparent;
+            nowLinkImage = Actions.ProjectFrom(projectUrl);
+            /*
+            nowLinkImage = new MovableImage(standardImageName);
+            backgroundimage.Source = ImageSource.FromFile(nowLinkImage.imageUrl);
+            */
+
+            backgroundImage = backgroundimage;
+            this.BackgroundColor = Color.Black;
+            AssignGestures();
+
+            mainPage = this;
+
+            Display(nowLinkImage);
+
+        }
         public static void Display(MovableImage movableImage)
         {
             absolute.Children.Clear();
@@ -41,6 +65,8 @@ namespace LinkImager
             try
             {
                 backgroundImage.Source = ImageSource.FromUri(new Uri(movableImage.imageUrl));
+
+                //backgroundImage.Source = 
             }
             catch(Exception ex)
             {
@@ -70,25 +96,40 @@ namespace LinkImager
             Paint(child);
 
         }
-
-        bool isVisible = true;
+        /* refractored - added to icons to AppBar instead
+        ShowState state = ShowState.IsHidden;
         void Button_Clicked(object sender, EventArgs e)
         {
-            if (isVisible == true)
+            if (state.)
                 isVisible = false;
             else
                 isVisible = true;
             ToggleVisibilityOfMovableImages(isVisible);
         }
+        */
 
-        private void ToggleVisibilityOfMovableImages(bool show)
+        /*
+        public static void ToggleVisibilityOfMovableImages(ShowState state)
         {
 
-            var list = Absolute.Children.ToList().Select((arg) => (MovableImage)arg);
+            var list = absolute.Children.ToList().Select((arg) => (MovableImage)arg);
             list.ToList().ForEach((MovableImage obj) => {
-                obj.isVisible(show);
+                obj.isVisible(state);
             });
             // and also set visibility of those movableimages that arent in absolute
+        }
+        */
+        public static void ToggleVisibilityOfMovableImages(ShowState showState)
+        {
+            Adjust(nowLinkImage.GetProject(), showState);
+        }
+        private static void Adjust(MovableImage movableImage, ShowState showState)
+        {
+            movableImage.isVisible(showState);
+            foreach(MovableImage child in movableImage.children)
+            {
+                Adjust(child, showState);
+            }
         }
         public static async void Remove(MovableImage movableImage)
         {
@@ -119,7 +160,9 @@ namespace LinkImager
 
         async void Absolute_Tapped(object sender, TapEventArgs e)
         {
-            if(nowLinkImage.owner == null)
+            // await App.Current.MainPage.DisplayAlert("info", "url is: " + projectUrl, "ok");
+
+            if (nowLinkImage.owner == null)
             {
                 if(nowLinkImage.imageUrl == standardImageName)
                 {
@@ -127,13 +170,14 @@ namespace LinkImager
                     if(mediaFile != null)
                     {
                         Azure azure = new Azure();
-                        string url = await azure.UploadFileToStorage(mediaFile.GetStream());
+                        string url = await azure.UploadFileToStorage(mediaFile);
                         nowLinkImage.imageUrl = url;
                         Display(nowLinkImage);
                     }
                 }
 
             }
+
         }
 
         async void Absolute_DoubleTapped(object sender, TapEventArgs e)

@@ -7,6 +7,7 @@ using UIKit;
 
 namespace LinkImager.iOS
 {
+
     // The UIApplicationDelegate for the application. This class is responsible for launching the 
     // User Interface of the application, as well as listening (and optionally responding) to 
     // application events from iOS.
@@ -28,6 +29,22 @@ namespace LinkImager.iOS
             LoadApplication(new App());
 
             return base.FinishedLaunching(app, options);
+        }
+        public override bool OpenUrl(UIApplication application, NSUrl url, string sourceApplication, NSObject annotation)
+        {
+            // url.StartAccessingSecurityScopedResource();
+            // check if url is image (user has edited image in another program
+            App.Current.MainPage = new AppBar(new MainPage(url.Path));
+            
+
+            /*
+            Xamarin.Calabash.Start();
+            global::Xamarin.Forms.Forms.Init();
+            MR.Gestures.iOS.Settings.LicenseKey = "QY37-QU4R-YH9Q-C9NA-6MTS-J5CV-3WE7-MVA4-7FDE-ZF8K-U8GP-FK5R-W6XN";
+            LoadApplication(new App(url.Path));
+            */
+            // return base.OpenUrl(application, url, sourceApplication, annotation);
+            return true;
         }
     }
 }

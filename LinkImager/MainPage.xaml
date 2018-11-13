@@ -10,9 +10,9 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <mr:AbsoluteLayout BackgroundColor="Transparent" x:Name="Absolute" Grid.Row="0" Grid.Column="0"/>
-        <StackLayout BackgroundColor="Transparent" Grid.Row="0" Grid.Column="0" WidthRequest="80" HeightRequest="80" HorizontalOptions="EndAndExpand" VerticalOptions="StartAndExpand">
+        <!--<StackLayout BackgroundColor="Transparent" Grid.Row="0" Grid.Column="0" WidthRequest="80" HeightRequest="80" HorizontalOptions="EndAndExpand" VerticalOptions="StartAndExpand">
             <Button x:Name="ActionButton" Text="Test" Clicked="Button_Clicked"/>
-        </StackLayout>
+        </StackLayout>-->
         </Grid>
     </Grid>
     

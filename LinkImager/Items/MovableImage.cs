@@ -13,7 +13,6 @@ namespace LinkImager.Items
         public string imageUrl;
         public List<MovableImage> children = new List<MovableImage>();
         public Rectangle rectangle;
-        MR.Gestures.AbsoluteLayout absolute;
         public MovableImage(string imageUrl)
         {
             this.imageUrl = imageUrl;
@@ -21,7 +20,7 @@ namespace LinkImager.Items
 
         public MovableImage(MR.Gestures.AbsoluteLayout absolute, MovableImage owner, Rectangle rectangle)
         {
-            this.absolute = absolute;
+            MainPage.absolute = absolute;
             this.owner = owner;
             this.Source = ImageSource.FromFile("camera.png");
             this.rectangle = rectangle;
@@ -89,7 +88,7 @@ namespace LinkImager.Items
         // touch eventshandlers...
         private void Handle_TappedWhenInVisible(object sender, TapEventArgs e)
         {
-            // App.Current.MainPage.DisplayAlert("Tapped", " you tapped invisible", "ok");
+           // App.Current.MainPage.DisplayAlert("Tapped", " you tapped invisible", "ok");
 
             if(imageUrl != null)
             {
@@ -113,9 +112,9 @@ namespace LinkImager.Items
             MainPage.actionOrigin = this;
             if(Device.RuntimePlatform == Device.Android)
             {
-                absolute.Panning += Absolute_Panning;
-                absolute.Swiped += Absolute_Swiped;
-                absolute.Up += Absolute_Up;
+                MainPage.absolute.Panning += Absolute_Panning;
+                MainPage.absolute.Swiped += Absolute_Swiped;
+                MainPage.absolute.Up += Absolute_Up;
             }
 
 
@@ -139,9 +138,9 @@ namespace LinkImager.Items
 
         void Absolute_Up(object sender, DownUpEventArgs e)
         {
-            absolute.Panning -= Absolute_Panning;
-            absolute.Up -= Absolute_Up;
-            absolute.Swiped -= Absolute_Swiped;
+            MainPage.absolute.Panning -= Absolute_Panning;
+            MainPage.absolute.Up -= Absolute_Up;
+            MainPage.absolute.Swiped -= Absolute_Swiped;
             // App.Current.MainPage.DisplayAlert("Up", "Absolute up", "ok");
         }
 
@@ -155,10 +154,10 @@ namespace LinkImager.Items
                 if (mediaFile != null)
                 {
                     Azure azure = new Azure();
-                    string url = await azure.UploadFileToStorage(mediaFile.GetStream());
+                    string url = await azure.UploadFileToStorage(mediaFile);
                     this.imageUrl = url;
                     this.Source = ImageSource.FromUri(new Uri(url));
-                    isVisible(false);
+                    // isVisible(false);
                 }
             }
             else
@@ -188,7 +187,7 @@ namespace LinkImager.Items
                 Point point = new Point(MR.Gestures.AbsoluteLayout.GetLayoutBounds(this).X, MR.Gestures.AbsoluteLayout.GetLayoutBounds(this).Y);
                 Point newPoint = point.Offset(e.DeltaDistance.X, e.DeltaDistance.Y);
                 MR.Gestures.AbsoluteLayout.SetLayoutBounds(this, new Rectangle(newPoint, size));
-                absolute.RaiseChild(this);
+                MainPage.absolute.RaiseChild(this);
                 rectangle = new Rectangle(newPoint, rectangle.Size);
             }
             else if(Device.RuntimePlatform == Device.iOS)
@@ -197,7 +196,7 @@ namespace LinkImager.Items
                 Point point = new Point(MR.Gestures.AbsoluteLayout.GetLayoutBounds(this).X, MR.Gestures.AbsoluteLayout.GetLayoutBounds(this).Y);
                 Point newPoint = point.Offset(e.TotalDistance.X, e.TotalDistance.Y);
                 MR.Gestures.AbsoluteLayout.SetLayoutBounds(this, new Rectangle(newPoint, size));
-                absolute.RaiseChild(this);
+                MainPage.absolute.RaiseChild(this);
                 rectangle = new Rectangle(newPoint, rectangle.Size);
             }
         }
@@ -214,11 +213,10 @@ namespace LinkImager.Items
         }
         // other methods
  
-        public void isVisible(bool show)
+        public void isVisible(ShowState showState)
         {
-            if(show)
+            if(showState == ShowState.IsShown)
             {
-                AssignEventHandlersWhenVisible();
                 if(imageUrl == null)
                 {
                     this.Source = ImageSource.FromFile("camera.png");
@@ -227,14 +225,28 @@ namespace LinkImager.Items
                 {
                     this.Source = ImageSource.FromUri(new Uri(imageUrl));
                 }
+                AssignEventHandlersWhenVisible();
             }
-            else
+            else if(showState == ShowState.IsHinted)
             {
-                // this.Opacity = 0.01;
+                if (imageUrl == null)
+                {
+                    this.Source = ImageSource.FromFile("camera.png");
+                }
+                else
+                {
+                    this.Source = ImageSource.FromUri(new Uri(imageUrl));
+                }
+                this.Opacity = 0.5;
+                AssignEventHandlersWhenInVisible();
+            }
+            else if(showState == ShowState.IsHidden)
+            {
+                this.Opacity = 1;
                 this.Source = ImageSource.FromFile("transparent.png");
                 AssignEventHandlersWhenInVisible();
-
             }
+             
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -246,6 +258,8 @@ namespace LinkImager.Items
             info.AddValue("y", rectangle.Y);
             info.AddValue("width", rectangle.Width);
             info.AddValue("height", rectangle.Height);
+
+
         }
         public MovableImage(SerializationInfo info, StreamingContext context)
         {
@@ -257,11 +271,14 @@ namespace LinkImager.Items
             double width = (double)info.GetValue("width", typeof(double));
             double height = (double)info.GetValue("height", typeof(double));
             rectangle = new Rectangle(new Point(x, y), new Size(width, height));
+
+            AssignEventHandlersWhenInVisible();
+
         }
         // getting the ultimate owner
         public MovableImage GetProject()
         {
-            MovableImage temp = owner;
+            MovableImage temp = this;
             while(temp.owner != null)
             {
                 temp = temp.owner;

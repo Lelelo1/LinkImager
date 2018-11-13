@@ -39,7 +39,7 @@ namespace LinkImager
 
         }
 
-        public async Task<string> UploadFileToStorage(Stream stream)
+        public async Task<string> UploadFileToStorage(MediaFile mediaFile)
         {
 
             // Get the reference to the block blob from the container
@@ -60,8 +60,8 @@ namespace LinkImager
             }
 
             // Upload the file
-            await blockBlob.UploadFromStreamAsync(stream);
 
+            await blockBlob.UploadFromStreamAsync(mediaFile.GetStreamWithImageRotatedForExternalStorage());
             return blockBlob.Uri.ToString();
         }
         // making uniqe filename for each imaag uploaded

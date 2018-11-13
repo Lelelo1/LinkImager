@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <NavigationPage Title="LinkImager" xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="LinkImager.AppBar">
     <NavigationPage.ToolbarItems>
-        <ToolbarItem Icon="share.png" Clicked="Handle_Clicked"/>
+        <ToolbarItem Icon="hint.png" Clicked="Handle_Hint"/>
+        <ToolbarItem Icon="show.png" Clicked="Handle_Show"/>
+        <ToolbarItem Icon="share.png" Clicked="Handle_Share"/>
     </NavigationPage.ToolbarItems>
 </NavigationPage>

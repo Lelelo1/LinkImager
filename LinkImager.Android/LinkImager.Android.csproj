@@ -87,11 +87,21 @@
     <AndroidResource Include="Resources\drawable\camera.png" />
     <AndroidResource Include="Resources\drawable\transparent.png" />
     <AndroidResource Include="Resources\drawable\branch.jpg" />
+    <AndroidResource Include="Resources\drawable\show.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\show.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\show.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\show.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\show.png" />
     <AndroidResource Include="Resources\drawable\share.png" />
     <AndroidResource Include="Resources\drawable-hdpi\share.png" />
     <AndroidResource Include="Resources\drawable-xhdpi\share.png" />
-    <AndroidResource Include="Resources\drawable-xxxhdpi\share.png" />
     <AndroidResource Include="Resources\drawable-xxhdpi\share.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\share.png" />
+    <AndroidResource Include="Resources\drawable\hint.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\hint.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\hint.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\hint.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\hint.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\drawable\" />

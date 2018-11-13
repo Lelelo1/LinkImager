@@ -3,9 +3,11 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 using LinkImager.Items;
+using Plugin.FilePicker.Abstractions;
 using Plugin.Media;
 using Plugin.Media.Abstractions;
 using Plugin.ShareFile;
+using Xamarin.Forms;
 namespace LinkImager
 {
     public class Actions
@@ -83,7 +85,20 @@ namespace LinkImager
             }
             else
             {
-                string tempDir = System.IO.Path.GetTempPath();
+                // FileData fileData = await Plugin.FilePicker.CrossFilePicker.Current();
+                // string tempDir = Xamarin.Essentials.FileSystem.AppDataDirectory;
+                // string tempDir = System.IO.Path.GetTempPath();
+                /*
+                string tempDir = System.Environment.GetFolderPath(
+                    System.Environment.SpecialFolder.Personal);
+                tempDir = Path.Combine(tempDir, "Pictures");
+                */
+                /*
+                var x = Plugin.FileSystem.CrossFileSystem.Current.LocalStorage;
+                tempDir = x.FullName;
+                */
+                string tempDir = Xamarin.Essentials.FileSystem.AppDataDirectory;
+
                 string name = await InputAlertBox.InputBox(App.Current.MainPage.Navigation);
                 if (!string.IsNullOrEmpty(name))
                 {
@@ -96,11 +111,25 @@ namespace LinkImager
                     stream.Close();
 
                     bool existed = File.Exists(fullPath);
-
-                    CrossShareFile.Current.ShareLocalFile(fullPath, "Title");
+                    CrossShareFile.Current.ShareLocalFile(fullPath);
 
                 }
+
+
             }
+        }
+        public static MovableImage ProjectFrom(string path)
+        {
+            string tempName = "temp.ii";
+            string tempDir = System.IO.Path.GetTempPath();
+            string fullPath = Path.Combine(tempDir, tempName);
+            File.Copy(path, fullPath, true);
+            Stream stream = File.Open(fullPath, FileMode.Open);
+            // Stream stream = new FileStream(new, FileAccess.Read);
+            BinaryFormatter formatter = new BinaryFormatter();
+            MovableImage project = (MovableImage)formatter.Deserialize(stream);
+            stream.Close();
+            return project;
         }
     }
 }
