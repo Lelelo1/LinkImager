@@ -24,7 +24,6 @@ namespace LinkImager.Items
             this.owner = owner;
             this.Source = ImageSource.FromFile("camera.png");
             this.rectangle = rectangle;
-            Xamarin.Forms.Button b = new Xamarin.Forms.Button();
 
             AssignEventHandlersWhenVisible();
         }
@@ -157,7 +156,7 @@ namespace LinkImager.Items
                     string url = await azure.UploadFileToStorage(mediaFile);
                     this.imageUrl = url;
                     this.Source = ImageSource.FromUri(new Uri(url));
-                    // isVisible(false);
+                    isVisible(ShowState.IsHidden);
                 }
             }
             else
