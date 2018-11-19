@@ -7,6 +7,9 @@ using Plugin.Media.Abstractions;
 using LinkImager.Items;
 using MR.Gestures;
 using Xamarin.Forms;
+using FFImageLoading.Forms;
+using FFImageLoading.Work;
+
 namespace LinkImager
 {
     public partial class MainPage : Xamarin.Forms.ContentPage
@@ -15,7 +18,7 @@ namespace LinkImager
         static Xamarin.Forms.ContentPage contentPage;
         public static MR.Gestures.AbsoluteLayout absolute;
         public static MovableImage nowLinkImage;
-        static MR.Gestures.Image backgroundImage;
+        static CachedImage backgroundImage;
         private static string standardImageName = "branch.jpg";
         public static string projectUrl;
         public MainPage()
@@ -26,8 +29,9 @@ namespace LinkImager
             // if not load project data file
             absolute.BackgroundColor = Color.Transparent; 
             nowLinkImage = new MovableImage(standardImageName);
-            backgroundimage.Source = ImageSource.FromFile(nowLinkImage.imageUrl);
+            backgroundimage.Source = Xamarin.Forms.ImageSource.FromFile(nowLinkImage.imageUrl);
             backgroundImage = backgroundimage;
+
             this.BackgroundColor = Color.Black;
             AssignGestures();
 
@@ -57,21 +61,24 @@ namespace LinkImager
             Display(nowLinkImage);
 
         }
-        public static void Display(MovableImage movableImage)
+        public static async void Display(MovableImage movableImage)
         {
             absolute.Children.Clear();
             nowLinkImage = movableImage;
             // try catch since branch.jpg is not an uri
+            Rectangle bounds = new Rectangle(new Point(0, 0), new Size(-1, -1));
             try
             {
-                backgroundImage.Source = ImageSource.FromUri(new Uri(movableImage.imageUrl));
+                // bounds = await GetBoundsAsync(backgroundImage, movableImage);
+                bounds = await ImageWaiter.WaitForBoundsAsync(backgroundImage, nowLinkImage);
 
-                //backgroundImage.Source = 
             }
             catch(Exception ex)
             {
-                backgroundImage.Source = ImageSource.FromFile(movableImage.imageUrl);
+
             }
+
+
             if(movableImage.children.Count > 0)
                 movableImage.children.ForEach((MovableImage obj) =>
             {
@@ -139,6 +146,7 @@ namespace LinkImager
             Azure azure = new Azure();
             await azure.DeleteFileFromStorage(url);
         }
+
         public static MovableImage actionOrigin = null;
         public void AssignGestures()
         {
@@ -269,4 +277,45 @@ namespace LinkImager
 
 
     }
+    public class ImageWaiter
+    {
+        // private Func<Task<Rectangle>> func;
+
+        private static TaskCompletionSource<Rectangle> BoundsAwaiter;
+        private static EventHandler<CachedImageEvents.SuccessEventArgs> Handle_Success = (s, e) =>
+        {
+            Rectangle rect = ((CachedImage)s).Bounds;
+            var r = e.LoadingResult;
+            BoundsAwaiter.SetResult(((CachedImage)s).Bounds);
+        };
+        public static Task<Rectangle> WaitForBoundsAsync(CachedImage cachedImage, MovableImage displayLinkImage)
+        {
+            // unregister so that eventhandlers doesn't stack up
+            cachedImage.Success -= Handle_Success;
+            BoundsAwaiter = new TaskCompletionSource<Rectangle>();
+            cachedImage.Success += Handle_Success;
+
+            Xamarin.Forms.ImageSource imageSource = null;
+            try
+            {
+                imageSource = Xamarin.Forms.ImageSource.FromUri(new Uri(displayLinkImage.imageUrl));
+            }
+            catch (Exception ex)
+            {
+                try
+                {
+                    imageSource = Xamarin.Forms.ImageSource.FromFile(displayLinkImage.imageUrl);
+                }
+                catch (Exception exc)
+                {
+                    throw new Exception("Could not fetch image from Uri nor from File");
+                }
+            }
+            cachedImage.Source = displayLinkImage.imageUrl;
+
+            return BoundsAwaiter.Task;
+        }
+    }
+
 }
+

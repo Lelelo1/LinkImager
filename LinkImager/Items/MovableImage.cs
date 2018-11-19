@@ -91,7 +91,13 @@ namespace LinkImager.Items
 
             if(imageUrl != null)
             {
-                MainPage.Display(this);
+                try
+                {
+                    MainPage.Display(this);
+                }catch(InvalidOperationException ex)
+                {
+                    App.Current.MainPage.DisplayAlert("Error", ex.Message, "ok");
+                }
             }
                 
                 

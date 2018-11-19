@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ContentPage xmlns:mr="clr-namespace:MR.Gestures;assembly=MR.Gestures" xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:local="clr-namespace:LinkImager" x:Class="LinkImager.MainPage">
+<ContentPage xmlns:mr="clr-namespace:MR.Gestures;assembly=MR.Gestures" xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:local="clr-namespace:LinkImager" x:Class="LinkImager.MainPage"
+             xmlns:ffimageloading="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms">
     <Grid>
-        <mr:Image x:Name="backgroundimage"/>
+        <!--<mr:Image x:Name="backgroundimage"/>-->
+        <ffimageloading:CachedImage x:Name="backgroundimage"/>
         <Grid BackgroundColor="Transparent">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>

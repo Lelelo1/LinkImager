@@ -26,6 +26,7 @@ namespace LinkImager.Droid
             CrossCurrentActivity.Current.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
             MR.Gestures.Android.Settings.LicenseKey = "QY37-QU4R-YH9Q-C9NA-6MTS-J5CV-3WE7-MVA4-7FDE-ZF8K-U8GP-FK5R-W6XN";
+            FFImageLoading.Forms.Platform.CachedImageRenderer.Init(enableFastRenderer: true);
             // File path = FileProvider.GetUriForFile(Context, this.PackageName, new File(new Uri("name")));
             // Android.Net.Uri uri = FileProvider.GetUriForFile(this, this.PackageName, new File(null));
 
