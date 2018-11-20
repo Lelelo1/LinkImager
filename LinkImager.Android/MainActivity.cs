@@ -10,6 +10,7 @@ using Plugin.CurrentActivity;
 using Android.Content;
 using Java.IO;
 using Android.Support.V4.Content;
+using System.IO;
 
 namespace LinkImager.Droid
 {
@@ -63,7 +64,36 @@ namespace LinkImager.Droid
             base.OnCreate(savedInstanceState);
             Intent intent = new Intent(this, typeof(MainActivity));
             intent.PutExtra("bundle", savedInstanceState);
-            MainActivity.projectUrl = Intent.Data.Path;
+            // MainActivity.projectUrl = Intent.Data.Path;
+
+            Stream stream = ContentResolver.OpenInputStream(Intent.Data);
+
+            // uri.
+            // MainActivity.projectUrl = GetActualPathFromFile(Intent.Data); // /filechache/129872dsjkd9273 on api 25 Path
+            string tempName = "tempAndroid.ii";
+            string tempDir = System.IO.Path.GetTempPath();
+            string fullPath = Path.Combine(tempDir, tempName);
+
+            const int bufferSize = 1024;
+            using (var inputStream = ContentResolver.OpenInputStream(Intent.Data))
+            {
+                using (var outputStream = System.IO.File.Create(fullPath))
+                {
+                    var buffer = new byte[bufferSize];
+                    while (true)
+                    {
+                        var count = inputStream.Read(buffer, 0, bufferSize);
+                        if (count > 0)
+                        {
+                            outputStream.Write(buffer, 0, count);
+                        }
+
+                        if (count < bufferSize) break;
+                    }
+                }
+            }
+
+            MainActivity.projectUrl = fullPath;
 
             StartActivity(intent);
             
