@@ -18,7 +18,7 @@ namespace LinkImager
         static Xamarin.Forms.ContentPage contentPage;
         public static MR.Gestures.AbsoluteLayout absolute;
         public static MovableImage nowLinkImage;
-        static CachedImage backgroundImage;
+        public static CachedImage backgroundImage;
         private static string standardImageName = "branch.jpg";
         public static string projectUrl;
         public MainPage()
@@ -85,9 +85,15 @@ namespace LinkImager
                 Paint(obj);
             });
         }
+        
+        // Paint from paint
         private static void Paint(MovableImage child)
         {
-            absolute.Children.Add(child, child.rectangle);
+
+            Rectangle paintRectangle = new Rectangle(new Point(0, 0), new Size(-1, -1));
+
+
+            absolute.Children.Add(child, child.Rectangle);
         }
         public static void Create(Rectangle rectangle)
         {

@@ -12,7 +12,54 @@ namespace LinkImager.Items
         public MovableImage owner;
         public string imageUrl;
         public List<MovableImage> children = new List<MovableImage>();
-        public Rectangle rectangle;
+        // public Rectangle rectangle;
+        private Rectangle rectangle;
+        public Rectangle Rectangle
+        {
+            get
+            {
+                Rectangle rect = new Rectangle(new Point(rectangle.X, rectangle.Y), new Size(rectangle.Width, rectangle.Height));
+                var backgroundImage = MainPage.backgroundImage;
+                SizeRequest sizeRequest = backgroundImage.Measure(backgroundImage.Bounds.Width, backgroundImage.Bounds.Height);
+                var w = sizeRequest.Request.Width;
+                var h = sizeRequest.Request.Height;
+                rect.X *= w;
+                var addX = (backgroundImage.Bounds.Width / 2) - (w / 2);
+                rect.X += addX;
+                rect.Y *= h;
+                var addY = (backgroundImage.Bounds.Height / 2) - (h / 2);
+                rect.Y += addY;
+                rect.Width *= w;
+                // rect.Width += (backgroundImage.Bounds.Width / 2) - (w / 2);
+                rect.Height *= h;
+                // rect.Height += (backgroundImage.Bounds.Height / 2) - (h / 2);
+
+
+
+                return rect;
+            }
+            set
+            {
+                Rectangle rect = value;
+                var backgroundImage = MainPage.backgroundImage;
+                SizeRequest sizeRequest = backgroundImage.Measure(backgroundImage.Bounds.Width, backgroundImage.Bounds.Height);
+                var w = sizeRequest.Request.Width;
+                var h = sizeRequest.Request.Height;
+
+                var addX = (backgroundImage.Bounds.Width / 2) - (w / 2);
+                rect.X -= addX;
+                rect.X /= w;
+                rect.Width /= w;
+
+                var addY = (backgroundImage.Bounds.Height / 2) - (h / 2);
+                rect.Y -= addY;
+                rect.Y /= h;
+                rect.Height /= h;
+
+                rectangle = rect;
+
+            }
+        }
         public MovableImage(string imageUrl)
         {
             this.imageUrl = imageUrl;
@@ -23,7 +70,7 @@ namespace LinkImager.Items
             MainPage.absolute = absolute;
             this.owner = owner;
             this.Source = ImageSource.FromFile("camera.png");
-            this.rectangle = rectangle;
+            Rectangle = rectangle;
 
             AssignEventHandlersWhenVisible();
         }
@@ -193,7 +240,7 @@ namespace LinkImager.Items
                 Point newPoint = point.Offset(e.DeltaDistance.X, e.DeltaDistance.Y);
                 MR.Gestures.AbsoluteLayout.SetLayoutBounds(this, new Rectangle(newPoint, size));
                 MainPage.absolute.RaiseChild(this);
-                rectangle = new Rectangle(newPoint, rectangle.Size);
+                Rectangle = new Rectangle(newPoint, rectangle.Size); //
             }
             else if(Device.RuntimePlatform == Device.iOS)
             {
@@ -202,7 +249,7 @@ namespace LinkImager.Items
                 Point newPoint = point.Offset(e.TotalDistance.X, e.TotalDistance.Y);
                 MR.Gestures.AbsoluteLayout.SetLayoutBounds(this, new Rectangle(newPoint, size));
                 MainPage.absolute.RaiseChild(this);
-                rectangle = new Rectangle(newPoint, rectangle.Size);
+                Rectangle = new Rectangle(newPoint, rectangle.Size); //
             }
         }
 
