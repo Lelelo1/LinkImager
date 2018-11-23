@@ -109,10 +109,6 @@ namespace LinkImager.Items
 
         }
 
-        void Handle_Up2(object sender, DownUpEventArgs e)
-        {
-        }
-
 
         private void AssignEventHandlersWhenInVisible()
         {
@@ -183,9 +179,11 @@ namespace LinkImager.Items
         // deselect
         void Handle_Up(object sender, DownUpEventArgs e)
         {
+
+            MainPage.actionOrigin = null;
             this.Panning -= Handle_Panning;
             this.Swiped -= Handle_Swiped;
-            this.Up -= Handle_Up;
+            // this.Up -= Handle_Up;
         }
 
         void Absolute_Up(object sender, DownUpEventArgs e)
@@ -222,7 +220,8 @@ namespace LinkImager.Items
 
         void Handle_LongPressed(object sender, LongPressEventArgs e)
         {
-            // App.Current.MainPage.DisplayAlert("LongPressed", " you longpressed", "ok");
+            App.Current.MainPage.DisplayAlert("LongPressed", " you longpressed", "ok");
+            MainPage.actionOrigin = null;
         }
 
         //using absolute pan cordinate then used by this
@@ -259,9 +258,23 @@ namespace LinkImager.Items
         }
 
 
-        void Handle_Swiped(object sender, SwipeEventArgs e)
+        async void Handle_Swiped(object sender, SwipeEventArgs e)
         {
-            App.Current.MainPage.DisplayAlert("Swiped", " you swiped", "ok");
+
+            // App.Current.MainPage.DisplayAlert("Swiped", " you swiped", "ok");
+            if(imageUrl == null || imageUrl == "camera.png")
+            {
+                this.Opacity = 0;
+                MainPage.absolute.Children.Remove(this);
+            }
+            else
+            {
+                this.Opacity = 0;
+                MainPage.absolute.Children.Remove(this);
+                Azure azure = new Azure();
+                await azure.DeleteFileFromStorage(this.imageUrl);
+            }
+
         }
         // other methods
  
@@ -289,7 +302,7 @@ namespace LinkImager.Items
                 {
                     this.Source = ImageSource.FromUri(new Uri(imageUrl));
                 }
-                this.Opacity = 0.5;
+                this.Opacity = 0.3;
                 AssignEventHandlersWhenInVisible();
             }
             else if(showState == ShowState.IsHidden)

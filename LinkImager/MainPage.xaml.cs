@@ -168,7 +168,7 @@ namespace LinkImager
         void Absolute_Down(object sender, DownUpEventArgs e)
         {
             down = e;
-
+            actionOrigin = null;
         }
 
 
@@ -226,22 +226,24 @@ namespace LinkImager
             {
                 if(nowLinkImage.imageUrl != standardImageName)
                 {
-                    string choice = await this.DisplayActionSheet("Image", "cancel", "Remove", "Edit");
-                    if (choice != null)
+                    if(actionOrigin == null)
                     {
-                        if (choice == "Remove")
+                        string choice = await this.DisplayActionSheet("Image", "Cancel", "Remove", "Edit");
+                        if (choice != null)
                         {
-                            Remove(nowLinkImage);
-                        }
-                        else if (choice == "Edit")
-                        {
-                            // share as image, remember which image - returned image replace
+                            if (choice == "Remove")
+                            {
+                                Remove(nowLinkImage);
+                            }
+                            else if (choice == "Edit")
+                            {
+                                // share as image, remember which image - returned image replace
+                            }
                         }
                     }
                 }
 
             }
-
         }
 
         void Absolute_Panned(object sender, PanEventArgs e)
@@ -262,7 +264,6 @@ namespace LinkImager
             {
                 // action occured on movable image and is handled there
             }
-            actionOrigin = null;
         }
         void Absolute_Swiped(object sender, SwipeEventArgs e)
         {
