@@ -148,7 +148,7 @@
     <Reference Include="Xamarin.iOS" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Xamarin.Forms" Version="3.3.0.967583" />
+    <PackageReference Include="Xamarin.Forms" Version="3.4.0.1008975" />
     <PackageReference Include="Xamarin.TestCloud.Agent" Version="0.21.7" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
@@ -165,11 +165,17 @@
     <BundleResource Include="Resources\share%403x.png" />
     <BundleResource Include="Resources\share%402x.png" />
     <BundleResource Include="Resources\share.png" />
-    <BundleResource Include="Resources\hint.png" />
-    <BundleResource Include="Resources\hint%402x.png" />
-    <BundleResource Include="Resources\hint%403x.png" />
+    <BundleResource Include="Resources\hintfilled.png" />
+    <BundleResource Include="Resources\hintfilled%402x.png" />
+    <BundleResource Include="Resources\hintfilled%403x.png" />
     <BundleResource Include="Resources\show.png" />
     <BundleResource Include="Resources\show%402x.png" />
     <BundleResource Include="Resources\show%403x.png" />
+    <BundleResource Include="Resources\hint.png" />
+    <BundleResource Include="Resources\hint%402x.png" />
+    <BundleResource Include="Resources\hint%403x.png" />
+    <BundleResource Include="Resources\showfilled.png" />
+    <BundleResource Include="Resources\showfilled%402x.png" />
+    <BundleResource Include="Resources\showfilled%403x.png" />
   </ItemGroup>
 </Project>

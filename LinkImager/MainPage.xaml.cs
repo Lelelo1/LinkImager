@@ -168,7 +168,8 @@ namespace LinkImager
         void Absolute_Down(object sender, DownUpEventArgs e)
         {
             down = e;
-            actionOrigin = null;
+            // actionOrigin = null; // using this creates panned down left create bug
+
         }
 
 
@@ -248,6 +249,7 @@ namespace LinkImager
 
         void Absolute_Panned(object sender, PanEventArgs e)
         {
+
             if (actionOrigin == null)
             {
                 // action occured on absolute
@@ -259,6 +261,7 @@ namespace LinkImager
                     Create(rectangle);
                 }
 
+
             }
             else
             {
@@ -267,16 +270,19 @@ namespace LinkImager
         }
         void Absolute_Swiped(object sender, SwipeEventArgs e)
         {
+
             if(actionOrigin == null)
             {
                 // action occured on absolute
                 if(nowLinkImage.owner != null)
                 {
+
                     Display(nowLinkImage.owner);
                 }
             }
             else
             {
+
                 // action occured on movable image and is handled there
             }
         }

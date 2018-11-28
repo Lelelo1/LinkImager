@@ -97,6 +97,7 @@ namespace LinkImager.Items
                 this.Tapped -= Handle_TappedWhenInVisible;
                 this.LongPressed -= Handle_LongPressed;
                 this.Panning -= Handle_Panning;
+                this.Panned -= Handle_Panned;
                 this.Swiped -= Handle_Swiped;
 
                 this.Down += Handle_DowniOS;
@@ -104,6 +105,7 @@ namespace LinkImager.Items
                 this.Tapped += Handle_Tapped;
                 this.LongPressed += Handle_LongPressed;
                 this.Panning += Handle_Panning;
+                this.Panned += Handle_Panned;
                 this.Swiped += Handle_Swiped;
             }
 
@@ -119,6 +121,7 @@ namespace LinkImager.Items
             this.Down -= Handle_DowniOS;
 
             this.Panning -= Handle_Panning;
+            this.Panned -= Handle_Panned;
             this.Swiped -= Handle_Swiped;
 
 
@@ -158,9 +161,11 @@ namespace LinkImager.Items
         void Handle_Down(object sender, DownUpEventArgs e)
         {
             MainPage.actionOrigin = this;
+
             if(Device.RuntimePlatform == Device.Android)
             {
-                MainPage.absolute.Panning += Absolute_Panning;
+                MainPage.absolute.Panning += Absolute_Panning; // can be set to Handle_Panning directly?
+                MainPage.absolute.Panned += Handle_Panned; // used to deselect actionorigin
                 MainPage.absolute.Swiped += Absolute_Swiped;
                 MainPage.absolute.Up += Absolute_Up;
             }
@@ -189,6 +194,7 @@ namespace LinkImager.Items
         void Absolute_Up(object sender, DownUpEventArgs e)
         {
             MainPage.absolute.Panning -= Absolute_Panning;
+            MainPage.absolute.Panned -= Handle_Panned;
             MainPage.absolute.Up -= Absolute_Up;
             MainPage.absolute.Swiped -= Absolute_Swiped;
             // App.Current.MainPage.DisplayAlert("Up", "Absolute up", "ok");
@@ -234,22 +240,35 @@ namespace LinkImager.Items
 
             if(Device.RuntimePlatform == Device.Android)
             {
-                Size size = MR.Gestures.AbsoluteLayout.GetLayoutBounds(this).Size;
-                Point point = new Point(MR.Gestures.AbsoluteLayout.GetLayoutBounds(this).X, MR.Gestures.AbsoluteLayout.GetLayoutBounds(this).Y);
+                // Size size = MR.Gestures.AbsoluteLayout.GetLayoutBounds(this).Size;
+                Size size = Rectangle.Size;
+                // Point point = new Point(MR.Gestures.AbsoluteLayout.GetLayoutBounds(this).X, MR.Gestures.AbsoluteLayout.GetLayoutBounds(this).Y);
+                Point point = Rectangle.Location;
                 Point newPoint = point.Offset(e.DeltaDistance.X, e.DeltaDistance.Y);
-                MR.Gestures.AbsoluteLayout.SetLayoutBounds(this, new Rectangle(newPoint, size));
+                Rectangle = new Rectangle(newPoint, size);
+                MR.Gestures.AbsoluteLayout.SetLayoutBounds(this, Rectangle);
                 MainPage.absolute.RaiseChild(this);
-                Rectangle = new Rectangle(newPoint, rectangle.Size); //
+                // Rectangle = new Rectangle(newPoint, rectangle.Size); //
             }
             else if(Device.RuntimePlatform == Device.iOS)
             {
-                Size size = MR.Gestures.AbsoluteLayout.GetLayoutBounds(this).Size;
-                Point point = new Point(MR.Gestures.AbsoluteLayout.GetLayoutBounds(this).X, MR.Gestures.AbsoluteLayout.GetLayoutBounds(this).Y);
+                // Size size = MR.Gestures.AbsoluteLayout.GetLayoutBounds(this).Size;
+                Size size = Rectangle.Size;
+                // Point point = new Point(MR.Gestures.AbsoluteLayout.GetLayoutBounds(this).X, MR.Gestures.AbsoluteLayout.GetLayoutBounds(this).Y);
+                Point point = Rectangle.Location;
                 Point newPoint = point.Offset(e.TotalDistance.X, e.TotalDistance.Y);
-                MR.Gestures.AbsoluteLayout.SetLayoutBounds(this, new Rectangle(newPoint, size));
+                Rectangle = new Rectangle(newPoint, size);
+                MR.Gestures.AbsoluteLayout.SetLayoutBounds(this, Rectangle);
                 MainPage.absolute.RaiseChild(this);
-                Rectangle = new Rectangle(newPoint, rectangle.Size); //
+                // Rectangle = new Rectangle(newPoint, rectangle.Size); //
+
             }
+        }
+        // for deselection only
+        void Handle_Panned(object sender, PanEventArgs e)
+        {
+            MainPage.actionOrigin = null;
+
         }
 
         void Absolute_Swiped(object sender, SwipeEventArgs e)
@@ -288,7 +307,15 @@ namespace LinkImager.Items
                 }
                 else
                 {
-                    this.Source = ImageSource.FromUri(new Uri(imageUrl));
+                    try
+                    {
+                        this.Source = ImageSource.FromUri(new Uri(imageUrl));
+                    }
+                    catch(Exception ex)
+                    {
+                        // malformed uri when branch.jpg is shown
+                    }
+
                 }
                 AssignEventHandlersWhenVisible();
             }
@@ -299,10 +326,17 @@ namespace LinkImager.Items
                     this.Source = ImageSource.FromFile("camera.png");
                 }
                 else
-                {
-                    this.Source = ImageSource.FromUri(new Uri(imageUrl));
+                {   
+                    try
+                    {
+                        this.Source = ImageSource.FromUri(new Uri(imageUrl));
+                    }
+                    catch(Exception ex)
+                    {
+                        // malformed uri when branch.jpg is shown
+                    }
                 }
-                this.Opacity = 0.3;
+                this.Opacity = 0.4;
                 AssignEventHandlersWhenInVisible();
             }
             else if(showState == ShowState.IsHidden)
