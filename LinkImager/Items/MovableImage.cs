@@ -283,15 +283,28 @@ namespace LinkImager.Items
             // App.Current.MainPage.DisplayAlert("Swiped", " you swiped", "ok");
             if(imageUrl == null || imageUrl == "camera.png")
             {
+                MainPage.actionOrigin = null;
                 this.Opacity = 0;
                 MainPage.absolute.Children.Remove(this);
+                // need to be removed from parent
+                if(owner != null)
+                {
+                    owner.children.Remove(this);
+                }
             }
             else
             {
+
+                MainPage.actionOrigin = null;
                 this.Opacity = 0;
                 MainPage.absolute.Children.Remove(this);
                 Azure azure = new Azure();
                 await azure.DeleteFileFromStorage(this.imageUrl);
+                // need to be removed from parent
+                if (owner != null)
+                {
+                    owner.children.Remove(this);
+                }
             }
 
         }
