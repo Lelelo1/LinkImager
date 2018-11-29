@@ -31,7 +31,10 @@ namespace LinkImager
             }
             else if(showState == ShowState.IsShown)
             {
-                
+                show.Icon = (FileImageSource)ImageSource.FromFile("show.png");
+                showState = ShowState.IsHinted;
+                MainPage.ToggleVisibilityOfMovableImages(showState);
+                hint.Icon = (FileImageSource)ImageSource.FromFile("hintfilled.png");
             }
 
         }
@@ -45,7 +48,10 @@ namespace LinkImager
             }
             else if(showState == ShowState.IsHinted)
             {
-
+                hint.Icon = (FileImageSource)ImageSource.FromFile("hint.png");
+                showState = ShowState.IsShown;
+                MainPage.ToggleVisibilityOfMovableImages(showState);
+                show.Icon = (FileImageSource)ImageSource.FromFile("showfilled.png");
             }
             else if(showState == ShowState.IsShown)
             {

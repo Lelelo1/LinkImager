@@ -314,6 +314,7 @@ namespace LinkImager.Items
         {
             if(showState == ShowState.IsShown)
             {
+                this.Opacity = 1;
                 if(imageUrl == null)
                 {
                     this.Source = ImageSource.FromFile("camera.png");
@@ -354,8 +355,9 @@ namespace LinkImager.Items
             }
             else if(showState == ShowState.IsHidden)
             {
-                this.Opacity = 1;
+
                 this.Source = ImageSource.FromFile("transparent.png");
+                this.Opacity = 1;
                 AssignEventHandlersWhenInVisible();
             }
              
