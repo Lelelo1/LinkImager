@@ -19,14 +19,14 @@ namespace LinkImager
             bool initialized = await CrossMedia.Current.Initialize();
             if (!initialized)
             {
-                throw new Exception("Unable to initialize Plugin.Media CrossMedia.Current in TakePhoto method");
+                // throw new Exception("Unable to initialize Plugin.Media CrossMedia.Current in TakePhoto method");
             }
             else
             {
                 if (!CrossMedia.Current.IsCameraAvailable || !CrossMedia.Current.IsTakePhotoSupported)
                 {
                     await App.Current.MainPage.DisplayAlert("Unavailable camera", "Camera, or take photo is not available on this device", "ok");
-                    throw new Exception("Unavailable camera or taking photo");
+                    // throw new Exception("Unavailable camera or taking photo");
                 }
                 else
                 {
@@ -52,14 +52,14 @@ namespace LinkImager
             bool initialized = await CrossMedia.Current.Initialize();
             if (!initialized)
             {
-                throw new Exception("Unable to initialize Plugin.Media CrossMedia.Current in TakePhoto method");
+                // throw new Exception("Unable to initialize Plugin.Media CrossMedia.Current in TakePhoto method");
             }
             else
             {
                 if (!CrossMedia.Current.IsCameraAvailable || !CrossMedia.Current.IsTakePhotoSupported)
                 {
                     await App.Current.MainPage.DisplayAlert("Photo picking","Picking of photo is not available on this device", "ok");
-                    throw new Exception("Unavailable picking of photos");
+                    // throw new Exception("Unavailable picking of photos");
                 }
                 else
                 {

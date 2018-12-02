@@ -15,7 +15,6 @@
     <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
     <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
     <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
-    <AndroidUseLatestPlatformSdk>false</AndroidUseLatestPlatformSdk>
     <TargetFrameworkVersion>v8.1</TargetFrameworkVersion>
     <AndroidHttpClientHandlerType>Xamarin.Android.Net.AndroidClientHandler</AndroidHttpClientHandlerType>
     <NuGetPackageImportStamp>
@@ -49,7 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Xamarin.Forms" Version="3.3.0.967583" />
+    <PackageReference Include="Xamarin.Forms" Version="3.4.0.1008975" />
     <PackageReference Include="Xamarin.Android.Support.Design" Version="27.0.2.1" />
     <PackageReference Include="Xamarin.Android.Support.v7.AppCompat" Version="27.0.2.1" />
     <PackageReference Include="Xamarin.Android.Support.v4" Version="27.0.2.1" />
@@ -87,21 +86,36 @@
     <AndroidResource Include="Resources\drawable\camera.png" />
     <AndroidResource Include="Resources\drawable\transparent.png" />
     <AndroidResource Include="Resources\drawable\branch.jpg" />
-    <AndroidResource Include="Resources\drawable\show.png" />
-    <AndroidResource Include="Resources\drawable-hdpi\show.png" />
-    <AndroidResource Include="Resources\drawable-xhdpi\show.png" />
-    <AndroidResource Include="Resources\drawable-xxhdpi\show.png" />
-    <AndroidResource Include="Resources\drawable-xxxhdpi\show.png" />
     <AndroidResource Include="Resources\drawable\share.png" />
     <AndroidResource Include="Resources\drawable-hdpi\share.png" />
     <AndroidResource Include="Resources\drawable-xhdpi\share.png" />
     <AndroidResource Include="Resources\drawable-xxhdpi\share.png" />
     <AndroidResource Include="Resources\drawable-xxxhdpi\share.png" />
+    <AndroidResource Include="Resources\drawable\show.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\show.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\show.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\show.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\show.png" />
+    <AndroidResource Include="Resources\drawable\showfilled.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\showfilled.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\showfilled.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\showfilled.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\showfilled.png" />
     <AndroidResource Include="Resources\drawable\hint.png" />
     <AndroidResource Include="Resources\drawable-hdpi\hint.png" />
     <AndroidResource Include="Resources\drawable-xhdpi\hint.png" />
     <AndroidResource Include="Resources\drawable-xxhdpi\hint.png" />
     <AndroidResource Include="Resources\drawable-xxxhdpi\hint.png" />
+    <AndroidResource Include="Resources\drawable\hintfilled.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\hintfilled.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\hintfilled.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\hintfilled.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\hintfilled.png" />
+    <AndroidResource Include="Resources\drawable\ic_launcher.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\ic_launcher.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\ic_launcher.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\ic_launcher.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\ic_launcher.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\drawable\" />

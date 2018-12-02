@@ -65,6 +65,7 @@ namespace LinkImager
         {
             absolute.Children.Clear();
             nowLinkImage = movableImage;
+
             // try catch since branch.jpg is not an uri
             Rectangle bounds = new Rectangle(new Point(0, 0), new Size(-1, -1));
             try
@@ -77,7 +78,8 @@ namespace LinkImager
             {
 
             }
-
+            await Task.Delay(100); // so that the cachedimage get its properties correct, see movableImage
+            var sizeRequest = backgroundImage.Measure(backgroundImage.Bounds.Width, backgroundImage.Bounds.Height);
 
             if(movableImage.children.Count > 0)
                 movableImage.children.ForEach((MovableImage obj) =>
@@ -94,6 +96,9 @@ namespace LinkImager
 
 
             absolute.Children.Add(child, child.Rectangle);
+
+            //271 165 63 77
+            //213 272 20 16
         }
         public static void Create(Rectangle rectangle)
         {
@@ -300,6 +305,7 @@ namespace LinkImager
             Rectangle rect = ((CachedImage)s).Bounds;
             var r = e.LoadingResult;
             BoundsAwaiter.SetResult(((CachedImage)s).Bounds);
+
         };
         public static Task<Rectangle> WaitForBoundsAsync(CachedImage cachedImage, MovableImage displayLinkImage)
         {

@@ -21,8 +21,10 @@ namespace LinkImager.Items
                 Rectangle rect = new Rectangle(new Point(rectangle.X, rectangle.Y), new Size(rectangle.Width, rectangle.Height));
                 var backgroundImage = MainPage.backgroundImage;
                 SizeRequest sizeRequest = backgroundImage.Measure(backgroundImage.Bounds.Width, backgroundImage.Bounds.Height);
+
                 var w = sizeRequest.Request.Width;
                 var h = sizeRequest.Request.Height;
+
                 rect.X *= w;
                 var addX = (backgroundImage.Bounds.Width / 2) - (w / 2);
                 rect.X += addX;
@@ -247,6 +249,7 @@ namespace LinkImager.Items
                 Point newPoint = point.Offset(e.DeltaDistance.X, e.DeltaDistance.Y);
                 Rectangle = new Rectangle(newPoint, size);
                 MR.Gestures.AbsoluteLayout.SetLayoutBounds(this, Rectangle);
+
                 MainPage.absolute.RaiseChild(this);
                 // Rectangle = new Rectangle(newPoint, rectangle.Size); //
             }
@@ -259,6 +262,7 @@ namespace LinkImager.Items
                 Point newPoint = point.Offset(e.TotalDistance.X, e.TotalDistance.Y);
                 Rectangle = new Rectangle(newPoint, size);
                 MR.Gestures.AbsoluteLayout.SetLayoutBounds(this, Rectangle);
+
                 MainPage.absolute.RaiseChild(this);
                 // Rectangle = new Rectangle(newPoint, rectangle.Size); //
 
