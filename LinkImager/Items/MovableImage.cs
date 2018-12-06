@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using MR.Gestures;
+using Plugin.Media.Abstractions;
 using Xamarin.Forms;
 namespace LinkImager.Items
 {
@@ -256,9 +257,20 @@ namespace LinkImager.Items
             MainPage.actionOrigin = null;
         }
 
-        void Handle_LongPressed(object sender, LongPressEventArgs e)
+        async void Handle_LongPressed(object sender, LongPressEventArgs e)
         {
-            App.Current.MainPage.DisplayAlert("LongPressed", " you longpressed", "ok");
+
+            // create a context menu here when implementing like in MainPage when giving edit option etc
+            // App.Current.MainPage.DisplayAlert("LongPressed", " you longpressed", "ok");
+            MediaFile mediaFile = await Actions.PickPhoto();
+            if(mediaFile != null)
+            {
+                Azure azure = new Azure();
+                string url = await azure.UploadFileToStorage(mediaFile);
+                ImageUrl = url;
+                this.Source = uriImageSource;
+                isVisible(ShowState.IsHidden);
+            }
             MainPage.actionOrigin = null;
         }
 

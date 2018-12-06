@@ -182,20 +182,22 @@ namespace LinkImager
         {
             // await App.Current.MainPage.DisplayAlert("info", "url is: " + projectUrl, "ok");
 
-            if (nowLinkImage.owner == null)
+            if(actionOrigin == null)
             {
-                if(nowLinkImage.ImageUrl == standardImageName)
+                if (nowLinkImage.owner == null)
                 {
-                    MediaFile mediaFile = await Actions.TakePhoto();
-                    if(mediaFile != null)
+                    if (nowLinkImage.ImageUrl == standardImageName)
                     {
-                        Azure azure = new Azure();
-                        string url = await azure.UploadFileToStorage(mediaFile);
-                        nowLinkImage.ImageUrl = url;
-                        Display(nowLinkImage);
+                        MediaFile mediaFile = await Actions.TakePhoto();
+                        if (mediaFile != null)
+                        {
+                            Azure azure = new Azure();
+                            string url = await azure.UploadFileToStorage(mediaFile);
+                            nowLinkImage.ImageUrl = url;
+                            Display(nowLinkImage);
+                        }
                     }
                 }
-
             }
 
         }
@@ -211,6 +213,7 @@ namespace LinkImager
 
         async void Absolute_LongPressed(object sender, LongPressEventArgs e)
         {
+
             // await App.Current.MainPage.DisplayAlert("LongPressed", "LongPressed aboslute", "ok");
             /*
             if(nowLinkImage.owner == null)
@@ -228,27 +231,42 @@ namespace LinkImager
                 }
             }
             */
-            if(nowLinkImage.ImageUrl != null)
+            if(actionOrigin == null)
             {
-                if(nowLinkImage.ImageUrl != standardImageName)
+                if (nowLinkImage.ImageUrl != standardImageName)
                 {
-                    if(actionOrigin == null)
+                    // string choice = await this.DisplayActionSheet("Image", "Cancel", "Remove", "Edit");
+                    string choice = await this.DisplayActionSheet("Image", "Cancel", "Remove");
+                    if (choice != null)
                     {
-                        string choice = await this.DisplayActionSheet("Image", "Cancel", "Remove", "Edit");
-                        if (choice != null)
+                        if (choice == "Remove")
                         {
-                            if (choice == "Remove")
+                            Remove(nowLinkImage);
+                        }
+                        else if (choice == "Edit")
+                        {
+                            // share as image, remember which image - returned image replace
+                        }
+                    }
+                }
+                else
+                {
+                    string choice = await this.DisplayActionSheet("Image", "Cancel", null, "Photos");
+                    if (choice != null)
+                    {
+                        if(choice == "Photos")
+                        {
+                            MediaFile mediaFile = await Actions.PickPhoto();
+                            if(mediaFile != null)
                             {
-                                Remove(nowLinkImage);
-                            }
-                            else if (choice == "Edit")
-                            {
-                                // share as image, remember which image - returned image replace
+                                Azure azure = new Azure();
+                                string url = await azure.UploadFileToStorage(mediaFile);
+                                nowLinkImage.ImageUrl = url;
+                                Display(nowLinkImage);
                             }
                         }
                     }
                 }
-
             }
         }
 
