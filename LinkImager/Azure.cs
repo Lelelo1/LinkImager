@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using Plugin.Media.Abstractions;
 using System.Linq;
 using System.Text;
+using Microsoft.WindowsAzure.MobileServices;
+using LinkImager.Model;
 
 namespace LinkImager
 {
@@ -23,6 +25,7 @@ namespace LinkImager
 
         private CloudBlobContainer container;
 
+        private MobileServiceClient mobileServiceClient;
         public Azure()
         {
             // Create storagecredentials object by reading the values from the configuration (appsettings.json)
@@ -36,7 +39,7 @@ namespace LinkImager
             // Get reference to the blob container by passing the name by reading the value from the configuration (appsettings.json)
             container = blobClient.GetContainerReference(containerName);
 
-
+            mobileServiceClient = new MobileServiceClient("https://linkimager.azurewebsites.net");
         }
 
         public async Task<string> UploadFileToStorage(MediaFile mediaFile)
@@ -82,6 +85,11 @@ namespace LinkImager
             CloudBlockBlob blockBlob = container.GetBlockBlobReference(Path.GetFileName(new Uri(url).LocalPath));
             await blockBlob.DeleteAsync();
             return await blockBlob.ExistsAsync();
+        }
+        //testing
+        public async void UploadMediaReference()
+        {
+            await mobileServiceClient.GetTable<Media>().InsertAsync(new Media("test", "testing"));
         }
     }
 }

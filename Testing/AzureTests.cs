@@ -14,15 +14,19 @@ namespace Testing
 
         [TestMethod]
         public async Task CanUploadImage()
-        { 
-            Stream stream = File.OpenRead("/Users/hemma/Projects/LinkImager/Testing/ImageFromCamera/temp.jpg");
+        {
+            string testImagePath = "/Users/hemma/Projects/LinkImager/Testing/ImageFromCamera/temp.jpg";
             Azure azure = new Azure();
-            url = await azure.UploadFileToStorage(stream);
+            url = await azure.UploadFileToStorage(new Plugin.Media.Abstractions.MediaFile(testImagePath, () => GetStream(testImagePath)));
             System.Diagnostics.Debug.WriteLine(url);
 
             Assert.IsTrue(new Uri((url)).IsAbsoluteUri);
         }
-
+        private static Stream GetStream(string testImagePath)
+        {
+            Stream stream = File.OpenRead(testImagePath);
+            return stream;
+        }
         [TestMethod]
         public async Task CanDelete()
         {
@@ -33,5 +37,11 @@ namespace Testing
             Assert.IsFalse(exists);
         }
 
+        [TestMethod] // temp
+        public void CanUploadMediaToEasyTables()
+        {
+            Azure azure = new Azure();
+            azure.UploadMediaReference();
+        }
     }
 }
