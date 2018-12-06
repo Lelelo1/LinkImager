@@ -79,7 +79,7 @@ namespace LinkImager
         public static async void Share(MovableImage project)
         {
 
-            if (project.imageUrl == null)// || movableImage.imageUrl == "branch.jpg"
+            if (project.ImageUrl == null)// || movableImage.imageUrl == "branch.jpg"
             {
                 await App.Current.MainPage.DisplayAlert("Empty", "Build your project first before saving it or sending it", "ok");
             }
@@ -97,8 +97,11 @@ namespace LinkImager
                 var x = Plugin.FileSystem.CrossFileSystem.Current.LocalStorage;
                 tempDir = x.FullName;
                 */
-                string tempDir = Xamarin.Essentials.FileSystem.AppDataDirectory;
-
+                string tempDir = Xamarin.Essentials.FileSystem.CacheDirectory;
+                // Xamarin.Essentials.FileSystem.
+                // var appdata = Xamarin.Essentials.FileSystem.AppDataDirectory;
+                // var appcache = Xamarin.Essentials.FileSystem.CacheDirectory;
+                // Environment.
                 string name = await InputAlertBox.InputBox(App.Current.MainPage.Navigation);
                 if (!string.IsNullOrEmpty(name))
                 {
@@ -111,8 +114,22 @@ namespace LinkImager
                     stream.Close();
 
                     bool existed = File.Exists(fullPath);
-                    CrossShareFile.Current.ShareLocalFile(fullPath);
+                    // CrossShareFile.Current.ShareLocalFile(fullPath);
+                    if(Device.RuntimePlatform == Device.iOS)
+                    {
+                        CrossShareFile.Current.ShareLocalFile(fullPath);
+                    }
+                    else
+                    {
+                        // https://xamarinhelp.com/share-dialog-xamarin-forms/
+                        string p = DependencyService.Get<IExternalStorage>().Get();
 
+                        await DependencyService.Get<IShare>().Show("title", "message", p + System.IO.Path.DirectorySeparatorChar + name);
+                    }
+
+
+
+                    
                 }
 
 

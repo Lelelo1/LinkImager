@@ -62,6 +62,9 @@ namespace LinkImager.Droid
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
+            var inte = this;
+            var type = typeof(LaunchProjectActivity);
+            var i = Intent;
             Intent intent = new Intent(this, typeof(MainActivity));
             intent.PutExtra("bundle", savedInstanceState);
             // MainActivity.projectUrl = Intent.Data.Path;

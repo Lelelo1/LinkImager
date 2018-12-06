@@ -10,9 +10,38 @@ namespace LinkImager.Items
     {
 
         public MovableImage owner;
-        public string imageUrl;
+        private string imageUrl;
+        public string ImageUrl
+        {
+            get
+            {
+                return imageUrl;
+            }
+            set
+            {
+                https://stackoverflow.com/questions/41487647/xamarin-forms-image-cache
+                try
+                {
+                    // value is url
+                    imageUrl = value;
+                    if (uriImageSource == null)
+                    {
+                        uriImageSource = new UriImageSource();
+                        uriImageSource.CachingEnabled = true;
+                        uriImageSource.CacheValidity = new TimeSpan(1, 0, 0);
+                    }
+                    uriImageSource.Uri = new Uri(value);
+                }
+                catch(Exception ex)
+                {
+                    // value is local file set in MainPage contructor
+                    imageUrl = value;
+                }
+            }
+        }
+        private UriImageSource uriImageSource;
         public List<MovableImage> children = new List<MovableImage>();
-        // public Rectangle rectangle;
+
         private Rectangle rectangle;
         public Rectangle Rectangle
         {
@@ -73,7 +102,6 @@ namespace LinkImager.Items
             this.owner = owner;
             this.Source = ImageSource.FromFile("camera.png");
             Rectangle = rectangle;
-
             AssignEventHandlersWhenVisible();
         }
 
@@ -213,8 +241,10 @@ namespace LinkImager.Items
                 {
                     Azure azure = new Azure();
                     string url = await azure.UploadFileToStorage(mediaFile);
-                    this.imageUrl = url;
-                    this.Source = ImageSource.FromUri(new Uri(url));
+                    // imageUrl = url;
+                    // this.Source = ImageSource.FromUri(new Uri(url));
+                    ImageUrl = url;
+                    this.Source = uriImageSource;
                     isVisible(ShowState.IsHidden);
                 }
             }
@@ -327,7 +357,8 @@ namespace LinkImager.Items
                 {
                     try
                     {
-                        this.Source = ImageSource.FromUri(new Uri(imageUrl));
+                        // this.Source = ImageSource.FromUri(new Uri(imageUrl));
+                        this.Source = uriImageSource;
                     }
                     catch(Exception ex)
                     {
@@ -347,7 +378,8 @@ namespace LinkImager.Items
                 {   
                     try
                     {
-                        this.Source = ImageSource.FromUri(new Uri(imageUrl));
+                        // this.Source = ImageSource.FromUri(new Uri(imageUrl));
+                        this.Source = uriImageSource;
                     }
                     catch(Exception ex)
                     {
@@ -370,7 +402,7 @@ namespace LinkImager.Items
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue("owner", owner);
-            info.AddValue("imageUrl", imageUrl);
+            info.AddValue("imageUrl", ImageUrl);
             info.AddValue("children", children);
             info.AddValue("x", rectangle.X);
             info.AddValue("y", rectangle.Y);
@@ -382,7 +414,8 @@ namespace LinkImager.Items
         public MovableImage(SerializationInfo info, StreamingContext context)
         {
             owner = (MovableImage)info.GetValue("owner", typeof(MovableImage));
-            imageUrl = (string)info.GetValue("imageUrl", typeof(string));
+            // imageUrl = (string)info.GetValue("imageUrl", typeof(string));
+            ImageUrl = (string)info.GetValue("imageUrl", typeof(string));
             children = (List<MovableImage>)info.GetValue("children", typeof(List<MovableImage>));
             double x = (double)info.GetValue("x", typeof(double));
             double y = (double)info.GetValue("y", typeof(double));

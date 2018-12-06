@@ -29,7 +29,7 @@ namespace LinkImager
             // if not load project data file
             absolute.BackgroundColor = Color.Transparent; 
             nowLinkImage = new MovableImage(standardImageName);
-            backgroundimage.Source = Xamarin.Forms.ImageSource.FromFile(nowLinkImage.imageUrl);
+            backgroundimage.Source = Xamarin.Forms.ImageSource.FromFile(nowLinkImage.ImageUrl);
             backgroundImage = backgroundimage;
 
             this.BackgroundColor = Color.Black;
@@ -151,8 +151,8 @@ namespace LinkImager
         }
         public static async void Remove(MovableImage movableImage)
         {
-            string url = movableImage.imageUrl;
-            nowLinkImage.imageUrl = standardImageName;
+            string url = movableImage.ImageUrl;
+            nowLinkImage.ImageUrl = standardImageName;
             Display(nowLinkImage);
             Azure azure = new Azure();
             await azure.DeleteFileFromStorage(url);
@@ -184,14 +184,14 @@ namespace LinkImager
 
             if (nowLinkImage.owner == null)
             {
-                if(nowLinkImage.imageUrl == standardImageName)
+                if(nowLinkImage.ImageUrl == standardImageName)
                 {
                     MediaFile mediaFile = await Actions.TakePhoto();
                     if(mediaFile != null)
                     {
                         Azure azure = new Azure();
                         string url = await azure.UploadFileToStorage(mediaFile);
-                        nowLinkImage.imageUrl = url;
+                        nowLinkImage.ImageUrl = url;
                         Display(nowLinkImage);
                     }
                 }
@@ -202,7 +202,7 @@ namespace LinkImager
 
         async void Absolute_DoubleTapped(object sender, TapEventArgs e)
         {
-            if(nowLinkImage.imageUrl != standardImageName && nowLinkImage.owner == null)
+            if(nowLinkImage.ImageUrl != standardImageName && nowLinkImage.owner == null)
             {
 
             }
@@ -228,9 +228,9 @@ namespace LinkImager
                 }
             }
             */
-            if(nowLinkImage.imageUrl != null)
+            if(nowLinkImage.ImageUrl != null)
             {
-                if(nowLinkImage.imageUrl != standardImageName)
+                if(nowLinkImage.ImageUrl != standardImageName)
                 {
                     if(actionOrigin == null)
                     {
@@ -314,24 +314,8 @@ namespace LinkImager
             BoundsAwaiter = new TaskCompletionSource<Rectangle>();
             cachedImage.Success += Handle_Success;
 
-            Xamarin.Forms.ImageSource imageSource = null;
-            try
-            {
-                imageSource = Xamarin.Forms.ImageSource.FromUri(new Uri(displayLinkImage.imageUrl));
-            }
-            catch (Exception ex)
-            {
-                try
-                {
-                    imageSource = Xamarin.Forms.ImageSource.FromFile(displayLinkImage.imageUrl);
-                }
-                catch (Exception exc)
-                {
-                    throw new Exception("Could not fetch image from Uri nor from File");
-                }
-            }
-            cachedImage.Source = displayLinkImage.imageUrl;
-
+            cachedImage.Source = displayLinkImage.ImageUrl;
+            
             return BoundsAwaiter.Task;
         }
     }
