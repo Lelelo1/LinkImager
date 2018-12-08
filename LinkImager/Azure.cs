@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.WindowsAzure.MobileServices;
 using LinkImager.Model;
+using Microsoft.WindowsAzure.MobileServices.Sync;
 
 namespace LinkImager
 {
@@ -25,7 +26,7 @@ namespace LinkImager
 
         private CloudBlobContainer container;
 
-        private MobileServiceClient mobileServiceClient;
+        private static MobileServiceClient mobileServiceClient = new MobileServiceClient("https://linkimager.azurewebsites.net");
         public Azure()
         {
             // Create storagecredentials object by reading the values from the configuration (appsettings.json)
@@ -39,7 +40,6 @@ namespace LinkImager
             // Get reference to the blob container by passing the name by reading the value from the configuration (appsettings.json)
             container = blobClient.GetContainerReference(containerName);
 
-            mobileServiceClient = new MobileServiceClient("https://linkimager.azurewebsites.net");
         }
 
         public async Task<string> UploadFileToStorage(MediaFile mediaFile)
@@ -59,7 +59,6 @@ namespace LinkImager
                     findUniqueName = false;
 
                 }
-
             }
 
             // Upload the file
@@ -86,10 +85,29 @@ namespace LinkImager
             await blockBlob.DeleteAsync();
             return await blockBlob.ExistsAsync();
         }
-        //testing
-        public async void UploadMediaReference()
+
+        public async void UploadMediaReference(string appKey, string url)
         {
-            await mobileServiceClient.GetTable<Media>().InsertAsync(new Media("test", "testing"));
+            await mobileServiceClient.GetTable<Media>().InsertAsync(new Media(appKey, url));
+        }
+           
+        public async Task<string> GenerateAppKey()
+        {
+            bool findUniqueName = true;
+            string appKey = null;
+            while (findUniqueName)
+            {
+                appKey = RandomString(20);
+
+                bool existed = (await mobileServiceClient.GetTable<Media>().ReadAsync()).Any<Media>(m => m.ApplicationKey == appKey);
+
+                if (!existed)
+                {
+                    findUniqueName = false;
+
+                }
+            }
+            return appKey;
         }
     }
 }

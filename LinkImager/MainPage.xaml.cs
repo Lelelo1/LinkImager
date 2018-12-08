@@ -51,7 +51,6 @@ namespace LinkImager
             nowLinkImage = new MovableImage(standardImageName);
             backgroundimage.Source = ImageSource.FromFile(nowLinkImage.imageUrl);
             */
-
             backgroundImage = backgroundimage;
             this.BackgroundColor = Color.Black;
             AssignGestures();
@@ -207,7 +206,11 @@ namespace LinkImager
             if(nowLinkImage.ImageUrl != standardImageName && nowLinkImage.owner == null)
             {
 
+
             }
+
+            string appKey = await App.GetAppKey();
+            await App.Current.MainPage.DisplayAlert("info", "Your app key is " + appKey,  "ok");
         }
 
 

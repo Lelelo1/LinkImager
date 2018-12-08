@@ -4,6 +4,8 @@ using System.IO;
 using System.Threading.Tasks;
 using LinkImager;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xamarin.Forms;
+
 namespace Testing
 {
     [TestClass]
@@ -33,15 +35,34 @@ namespace Testing
             Azure azure = new Azure();
             // need to extract name and use conteiner.getReference from url
             bool exists = await azure.DeleteFileFromStorage(url);
-
+            
             Assert.IsFalse(exists);
         }
 
-        [TestMethod] // temp
+        static string exampleAppKey = "test";
+        Azure azure;
+        [TestMethod] 
         public void CanUploadMediaToEasyTables()
         {
-            Azure azure = new Azure();
-            azure.UploadMediaReference();
+            azure = new Azure();
+            azure.UploadMediaReference(exampleAppKey);
+        }
+        [TestMethod]
+        
+        public async Task CanGenerateUniqueAppKey()
+        {
+            Microsoft.WindowsAzure.MobileServices.;
+            azure = new Azure();
+            string s = await azure.GenerateAppKey("test");
+            System.Diagnostics.Debug.WriteLine("generated appKey: " + s);
+            Assert.IsTrue(exampleAppKey != s);
+        }
+        [TestMethod]
+        public async Task CanGenerateUniqueAppKeyNotPresentInEasyTables()
+        {
+            azure = new Azure();
+            string appKey = await azure.GenerateAppKey();
+
         }
     }
 }
