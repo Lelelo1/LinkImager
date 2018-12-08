@@ -91,11 +91,11 @@ namespace LinkImager
         private static void Paint(MovableImage child)
         {
 
-            Rectangle paintRectangle = new Rectangle(new Point(0, 0), new Size(-1, -1));
-
 
             absolute.Children.Add(child, child.Rectangle);
 
+            // https://linkimagerstorageaccount.blob.core.windows.net/images/UOTZCNNZUZBUEMTJLTXF.jpg
+            // https://linkimagerstorageaccount.blob.core.windows.net/images/IVKCMKTNHOVKZLVXNRJB.jpg
             //271 165 63 77
             //213 272 20 16
         }
@@ -153,8 +153,19 @@ namespace LinkImager
             string url = movableImage.ImageUrl;
             nowLinkImage.ImageUrl = standardImageName;
             Display(nowLinkImage);
-            Azure azure = new Azure();
-            await azure.DeleteFileFromStorage(url);
+            // condition here
+            string applicationKey = await App.GetApplicationKey();
+            if(applicationKey == movableImage.appKey)
+            {
+                // Delete from cloud only if is author
+                Azure azure = new Azure();
+                await azure.DeleteFileFromStorage(url);
+            }
+            else
+            {
+                await App.Current.MainPage.DisplayAlert("Not author", "Not author so image was not removed from cloud", "ok");
+            }
+
         }
 
         public static MovableImage actionOrigin = null;
@@ -209,7 +220,7 @@ namespace LinkImager
 
             }
 
-            string appKey = await App.GetAppKey();
+            string appKey = await App.GetApplicationKey();
             await App.Current.MainPage.DisplayAlert("info", "Your app key is " + appKey,  "ok");
         }
 

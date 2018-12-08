@@ -11,27 +11,27 @@ namespace LinkImager
     public partial class App : Application
     {
         // used to have one uniqe string per app and mark/sign all resources/images
-        private static string appKey;
-        public static async Task<string> GetAppKey()
+        private static string applicationKey;
+        public static async Task<string> GetApplicationKey()
         {
-            if(appKey == null)
+            if(applicationKey == null)
             {
                 // string appkey = Preferences.Get("appKey", null);
-                string appkey = CrossSettings.Current.GetValueOrDefault("appKey", null);
+                string applicationkey = CrossSettings.Current.GetValueOrDefault("appKey", null);
 
-                if(appkey == null)
+                if(applicationkey == null)
                 {
                     Azure azure = new Azure();
-                    appkey = await azure.GenerateAppKey();
+                    applicationkey = await azure.GenerateAppKey();
 
-                    azure.UploadMediaReference(appkey, "key");
+                    azure.UploadMediaReference(applicationkey, "key");
                     // Preferences.Set("appKey", appKey);
-                    CrossSettings.Current.AddOrUpdateValue("appKey", appkey);
+                    CrossSettings.Current.AddOrUpdateValue("appKey", applicationkey);
                 }
-                appKey = appkey;
+                applicationKey = applicationkey;
             }
-            // tested works
-            return appKey;
+            // tested works. however
+            return applicationKey;
         }
         public App()
         {

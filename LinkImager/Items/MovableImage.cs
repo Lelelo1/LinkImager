@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Net.Http;
 using System.Runtime.Serialization;
 using MR.Gestures;
 using Plugin.Media.Abstractions;
@@ -9,7 +12,7 @@ namespace LinkImager.Items
     [Serializable()]
 	public class MovableImage : MR.Gestures.Image, ISerializable
     {
-        private string appKey;
+        public string appKey;
         public MovableImage owner;
         private string imageUrl;
         public string ImageUrl
@@ -20,25 +23,31 @@ namespace LinkImager.Items
             }
             set
             {
-                https://stackoverflow.com/questions/41487647/xamarin-forms-image-cache
-                try
-                {
-                    // value is url
-                    imageUrl = value;
-                    if (uriImageSource == null)
-                    {
-                        uriImageSource = new UriImageSource();
-                        uriImageSource.CachingEnabled = true;
-                        uriImageSource.CacheValidity = new TimeSpan(1, 0, 0);
-                    }
-                    uriImageSource.Uri = new Uri(value);
-                }
-                catch(Exception ex)
-                {
-                    // value is local file set in MainPage contructor
-                    imageUrl = value;
-                }
+                SetImageUrl(value);
             }
+        }
+        private async void SetImageUrl(string value)
+        {
+            imageUrl = value;
+            if (uriImageSource == null)
+            {
+                uriImageSource = new UriImageSource();
+                uriImageSource.CachingEnabled = true;
+                uriImageSource.CacheValidity = new TimeSpan(1, 0, 0);
+            }
+
+            bool exists = await Azure.Exists(imageUrl);
+
+            if (exists)
+            {
+                uriImageSource.Uri = new Uri(imageUrl);
+            }
+            else
+            {
+                imageUrl = "https://linkimagerstorageaccount.blob.core.windows.net/statusimages/ImageDeleted.jpg";
+                uriImageSource.Uri = new Uri(imageUrl);
+            }
+
         }
         private UriImageSource uriImageSource;
         public List<MovableImage> children = new List<MovableImage>();
@@ -346,8 +355,18 @@ namespace LinkImager.Items
                 MainPage.actionOrigin = null;
                 this.Opacity = 0;
                 MainPage.absolute.Children.Remove(this);
-                Azure azure = new Azure();
-                await azure.DeleteFileFromStorage(this.imageUrl);
+                string applicationKey = await App.GetApplicationKey();
+                if(applicationKey == this.appKey)
+                {
+                    // if is author
+                    Azure azure = new Azure();
+                    await azure.DeleteFileFromStorage(this.imageUrl);
+                }
+                else
+                {
+                    // is not author - don't remove from cloud
+                    await App.Current.MainPage.DisplayAlert("Not author", "Not author so image was not removed from cloud", "ok");
+                }
                 // need to be removed from parent
                 if (owner != null)
                 {
@@ -359,7 +378,7 @@ namespace LinkImager.Items
         // other methods
         private async void SetAppKey()
         {
-           appKey =  await App.GetAppKey();
+           appKey =  await App.GetApplicationKey();
         }
         public void isVisible(ShowState showState)
         {
@@ -380,6 +399,7 @@ namespace LinkImager.Items
                     catch(Exception ex)
                     {
                         // malformed uri when branch.jpg is shown
+
                     }
 
                 }

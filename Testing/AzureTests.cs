@@ -38,7 +38,7 @@ namespace Testing
             
             Assert.IsFalse(exists);
         }
-
+        /*
         static string exampleAppKey = "test";
         Azure azure;
         [TestMethod] 
@@ -47,16 +47,19 @@ namespace Testing
             azure = new Azure();
             azure.UploadMediaReference(exampleAppKey);
         }
+        */
+        /*
         [TestMethod]
-        
         public async Task CanGenerateUniqueAppKey()
         {
-            Microsoft.WindowsAzure.MobileServices.;
+
             azure = new Azure();
             string s = await azure.GenerateAppKey("test");
             System.Diagnostics.Debug.WriteLine("generated appKey: " + s);
             Assert.IsTrue(exampleAppKey != s);
         }
+        */
+        /*
         [TestMethod]
         public async Task CanGenerateUniqueAppKeyNotPresentInEasyTables()
         {
@@ -64,5 +67,7 @@ namespace Testing
             string appKey = await azure.GenerateAppKey();
 
         }
+        */
+
     }
 }

@@ -109,5 +109,12 @@ namespace LinkImager
             }
             return appKey;
         }
+
+        public static async Task<bool> Exists(string url)
+        {
+            Uri uri = new Uri(url);
+            CloudBlockBlob cloudBlockBlob = new CloudBlockBlob(uri);
+            return await cloudBlockBlob.ExistsAsync();
+        }
     }
 }
