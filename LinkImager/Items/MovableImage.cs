@@ -9,7 +9,7 @@ namespace LinkImager.Items
     [Serializable()]
 	public class MovableImage : MR.Gestures.Image, ISerializable
     {
-
+        private string appKey;
         public MovableImage owner;
         private string imageUrl;
         public string ImageUrl
@@ -95,10 +95,12 @@ namespace LinkImager.Items
         public MovableImage(string imageUrl)
         {
             this.imageUrl = imageUrl;
+            SetAppKey();
         }
 
         public MovableImage(MR.Gestures.AbsoluteLayout absolute, MovableImage owner, Rectangle rectangle)
         {
+            SetAppKey();
             MainPage.absolute = absolute;
             this.owner = owner;
             this.Source = ImageSource.FromFile("camera.png");
@@ -355,7 +357,10 @@ namespace LinkImager.Items
 
         }
         // other methods
- 
+        private async void SetAppKey()
+        {
+           appKey =  await App.GetAppKey();
+        }
         public void isVisible(ShowState showState)
         {
             if(showState == ShowState.IsShown)
@@ -413,6 +418,7 @@ namespace LinkImager.Items
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
+            info.AddValue("appKey", appKey);
             info.AddValue("owner", owner);
             info.AddValue("imageUrl", ImageUrl);
             info.AddValue("children", children);
@@ -425,6 +431,7 @@ namespace LinkImager.Items
         }
         public MovableImage(SerializationInfo info, StreamingContext context)
         {
+            appKey = (string)info.GetValue("appKey", typeof(string));
             owner = (MovableImage)info.GetValue("owner", typeof(MovableImage));
             // imageUrl = (string)info.GetValue("imageUrl", typeof(string));
             ImageUrl = (string)info.GetValue("imageUrl", typeof(string));
