@@ -19,7 +19,7 @@ namespace LinkImager
         public static MR.Gestures.AbsoluteLayout absolute;
         public static MovableImage nowLinkImage;
         public static CachedImage backgroundImage;
-        private static string standardImageName = "branch.jpg";
+        public static string standardImageName = "branch.jpg";
         public static string projectUrl;
         public MainPage()
         {
@@ -157,9 +157,12 @@ namespace LinkImager
             string applicationKey = await App.GetApplicationKey();
             if(applicationKey == movableImage.appKey)
             {
-                // Delete from cloud only if is author
-                Azure azure = new Azure();
-                await azure.DeleteFileFromStorage(url);
+                if(movableImage.ImageUrl != StatusImages.ImageDeleted)
+                {
+                    // Delete from cloud only if is author
+                    Azure azure = new Azure();
+                    await azure.DeleteFileFromStorage(url);
+                }
             }
             else
             {
@@ -184,9 +187,11 @@ namespace LinkImager
         {
             down = e;
             // actionOrigin = null; // using this creates panned down left create bug
-
+            if(Device.RuntimePlatform == Device.iOS)
+            {
+                actionOrigin = null;
+            }
         }
-
 
         async void Absolute_Tapped(object sender, TapEventArgs e)
         {
@@ -194,22 +199,22 @@ namespace LinkImager
 
             if(actionOrigin == null)
             {
-                if (nowLinkImage.owner == null)
+                // make enumeration maybe for statusimages. Here check if is branch or azure branch
+                if (nowLinkImage.ImageUrl == standardImageName || nowLinkImage.ImageUrl == StatusImages.ImageDeleted)
                 {
-                    if (nowLinkImage.ImageUrl == standardImageName)
+                    MediaFile mediaFile = await Actions.TakePhoto();
+                    if (mediaFile != null)
                     {
-                        MediaFile mediaFile = await Actions.TakePhoto();
-                        if (mediaFile != null)
-                        {
-                            Azure azure = new Azure();
-                            string url = await azure.UploadFileToStorage(mediaFile);
-                            nowLinkImage.ImageUrl = url;
-                            Display(nowLinkImage);
-                        }
+                        nowLinkImage.ImageUrl = mediaFile.Path; // works faster. Whatch out for unsynced export issues. 
+                        Display(nowLinkImage);
+                        Azure azure = new Azure();
+                        string url = await azure.UploadFileToStorage(mediaFile); // takes time
+                        nowLinkImage.ImageUrl = url;
+
                     }
                 }
             }
-
+            actionOrigin = null; // for solving android issue. Check if it does not hurt iOS
         }
 
         async void Absolute_DoubleTapped(object sender, TapEventArgs e)

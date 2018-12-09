@@ -64,7 +64,10 @@ namespace LinkImager
             // Upload the file
 
             await blockBlob.UploadFromStreamAsync(mediaFile.GetStreamWithImageRotatedForExternalStorage());
-            return blockBlob.Uri.ToString();
+            string url = blockBlob.Uri.ToString();
+            string appKey = await App.GetApplicationKey();
+            UploadMediaReference(appKey, url);
+            return url;
         }
         // making uniqe filename for each imaag uploaded
         private string RandomString(int size)

@@ -4,6 +4,8 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Runtime.Serialization;
+using System.Threading;
+using System.Threading.Tasks;
 using MR.Gestures;
 using Plugin.Media.Abstractions;
 using Xamarin.Forms;
@@ -23,7 +25,7 @@ namespace LinkImager.Items
             }
             set
             {
-                SetImageUrl(value);
+                new Thread(() => SetImageUrl(value)).Start(); // very fast on ios! slow on my api23 android phone
             }
         }
         private async void SetImageUrl(string value)
@@ -36,16 +38,23 @@ namespace LinkImager.Items
                 uriImageSource.CacheValidity = new TimeSpan(1, 0, 0);
             }
 
-            bool exists = await Azure.Exists(imageUrl);
-
-            if (exists)
+            try
             {
-                uriImageSource.Uri = new Uri(imageUrl);
+                bool exists = await Azure.Exists(imageUrl);
+                if (exists)
+                {
+                    uriImageSource.Uri = new Uri(imageUrl);
+                }
+                else
+                {
+                    imageUrl = StatusImages.ImageDeleted;
+                    uriImageSource.Uri = new Uri(imageUrl);
+                }
             }
-            else
+            catch(Exception ex)
             {
-                imageUrl = "https://linkimagerstorageaccount.blob.core.windows.net/statusimages/ImageDeleted.jpg";
-                uriImageSource.Uri = new Uri(imageUrl);
+                // imageUrl is mediaFile.Path (temporarily) or branch.jpg
+
             }
 
         }
@@ -123,6 +132,7 @@ namespace LinkImager.Items
             if(Device.RuntimePlatform == Device.Android)
             {
                 this.Down -= Handle_Down;
+                this.Down -= Handle_DowniOS;
                 this.Tapped -= Handle_Tapped;
                 this.LongPressed -= Handle_LongPressed;
                 this.Tapped -= Handle_TappedWhenInVisible;
@@ -134,7 +144,7 @@ namespace LinkImager.Items
             else
             {
                 this.Down -= Handle_DowniOS;
-                this.Up -= Handle_UpiOS;
+                // this.Up -= Handle_UpiOS; not used
                 this.Tapped -= Handle_Tapped;
                 this.Tapped -= Handle_TappedWhenInVisible;
                 this.LongPressed -= Handle_LongPressed;
@@ -143,7 +153,7 @@ namespace LinkImager.Items
                 this.Swiped -= Handle_Swiped;
 
                 this.Down += Handle_DowniOS;
-                this.Up += Handle_UpiOS;
+                // this.Up += Handle_UpiOS;
                 this.Tapped += Handle_Tapped;
                 this.LongPressed += Handle_LongPressed;
                 this.Panning += Handle_Panning;
@@ -161,12 +171,12 @@ namespace LinkImager.Items
             this.LongPressed -= Handle_LongPressed;
             this.Tapped -= Handle_TappedWhenInVisible;
             this.Down -= Handle_DowniOS;
-
+            
             this.Panning -= Handle_Panning;
             this.Panned -= Handle_Panned;
             this.Swiped -= Handle_Swiped;
 
-
+            this.Down += Handle_DowniOS; // rename maybe
 
             this.Tapped += Handle_TappedWhenInVisible;
             this.LongPressed += null;
@@ -176,7 +186,7 @@ namespace LinkImager.Items
         private void Handle_TappedWhenInVisible(object sender, TapEventArgs e)
         {
            // App.Current.MainPage.DisplayAlert("Tapped", " you tapped invisible", "ok");
-
+           
             if(imageUrl != null)
             {
                 try
@@ -187,14 +197,17 @@ namespace LinkImager.Items
                     App.Current.MainPage.DisplayAlert("Error", ex.Message, "ok");
                 }
             }
-                
-                
+              
         }
 
         void Handle_DowniOS(object sender, DownUpEventArgs e)
         {
 
-            MainPage.actionOrigin = this;
+            MainPage.actionOrigin = this; // For weird android. down prevents tapped from being called
+            if(Device.RuntimePlatform == Device.Android)
+            {
+                Handle_TappedWhenInVisible(sender, null);
+            }
 
         }
 
@@ -203,6 +216,7 @@ namespace LinkImager.Items
         void Handle_Down(object sender, DownUpEventArgs e)
         {
             MainPage.actionOrigin = this;
+
 
             if(Device.RuntimePlatform == Device.Android)
             {
@@ -219,6 +233,7 @@ namespace LinkImager.Items
         {
             // previously unset actionOrigin
             // but occurs prior to panned in absolute
+            MainPage.actionOrigin = null; // is now used when visible only - created drag bug
 
         }
 
@@ -239,7 +254,10 @@ namespace LinkImager.Items
             MainPage.absolute.Panned -= Handle_Panned;
             MainPage.absolute.Up -= Absolute_Up;
             MainPage.absolute.Swiped -= Absolute_Swiped;
+            MainPage.actionOrigin = null;
+
             // App.Current.MainPage.DisplayAlert("Up", "Absolute up", "ok");
+
         }
 
 
@@ -293,6 +311,7 @@ namespace LinkImager.Items
         void Handle_Panning(object sender, PanEventArgs e)
         {
 
+
             if(Device.RuntimePlatform == Device.Android)
             {
                 // Size size = MR.Gestures.AbsoluteLayout.GetLayoutBounds(this).Size;
@@ -338,7 +357,7 @@ namespace LinkImager.Items
         {
 
             // App.Current.MainPage.DisplayAlert("Swiped", " you swiped", "ok");
-            if(imageUrl == null || imageUrl == "camera.png")
+            if(imageUrl == null || imageUrl == "camera.png" || imageUrl == StatusImages.ImageDeleted)
             {
                 MainPage.actionOrigin = null;
                 this.Opacity = 0;
