@@ -103,8 +103,13 @@ namespace LinkImager
                 // var appcache = Xamarin.Essentials.FileSystem.CacheDirectory;
                 // Environment.
                 string name = await InputAlertBox.InputBox(App.Current.MainPage.Navigation);
+
                 if (!string.IsNullOrEmpty(name))
                 {
+                    if(MainPage.mediaUploadProccesses.Count >= 1)
+                    {
+                        await MainPage.mediaUploadProccesses[MainPage.mediaUploadProccesses.Count - 1];
+                    }
                     name += ".ii";
                     string fullPath = Path.Combine(tempDir, name);
                     Stream stream = File.Open(fullPath, FileMode.Create);

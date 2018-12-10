@@ -44,7 +44,6 @@ namespace LinkImager
 
         public async Task<string> UploadFileToStorage(MediaFile mediaFile)
         {
-
             // Get the reference to the block blob from the container
             CloudBlockBlob blockBlob = null;
             bool findUniqueName = true;

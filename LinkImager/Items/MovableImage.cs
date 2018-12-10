@@ -16,18 +16,25 @@ namespace LinkImager.Items
     {
         public string appKey;
         public MovableImage owner;
+        public string imageMediaPath;
         private string imageUrl;
         public string ImageUrl
         {
             get
             {
-                return imageUrl;
+                return imageMediaPath == null ? imageUrl : imageMediaPath;
+
             }
             set
             {
-                new Thread(() => SetImageUrl(value)).Start(); // very fast on ios! slow on my api23 android phone
+                // new Thread(() => SetImageUrl(value)).Start(); // very fast on ios! slow on my api23 android phone. Is only made on deserialization now
+                SetImageUrl(value);
+                imageMediaPath = null;
+                // imageUrl = value;
+
             }
         }
+
         private async void SetImageUrl(string value)
         {
             imageUrl = value;
@@ -56,7 +63,6 @@ namespace LinkImager.Items
                 // imageUrl is mediaFile.Path (temporarily) or branch.jpg
 
             }
-
         }
         private UriImageSource uriImageSource;
         public List<MovableImage> children = new List<MovableImage>();
@@ -138,7 +144,7 @@ namespace LinkImager.Items
                 this.Tapped -= Handle_TappedWhenInVisible;
 
                 this.Down += Handle_Down;
-                this.Tapped += Handle_Tapped;
+                // this.Tapped += Handle_Tapped;
                 this.LongPressed += Handle_LongPressed;
             }
             else
@@ -186,16 +192,11 @@ namespace LinkImager.Items
         private void Handle_TappedWhenInVisible(object sender, TapEventArgs e)
         {
            // App.Current.MainPage.DisplayAlert("Tapped", " you tapped invisible", "ok");
-           
-            if(imageUrl != null)
+
+            if(ImageUrl != null)
             {
-                try
-                {
-                    MainPage.Display(this);
-                }catch(InvalidOperationException ex)
-                {
-                    App.Current.MainPage.DisplayAlert("Error", ex.Message, "ok");
-                }
+
+                MainPage.Display(this);
             }
               
         }
@@ -220,6 +221,7 @@ namespace LinkImager.Items
 
             if(Device.RuntimePlatform == Device.Android)
             {
+                MainPage.absolute.Tapped += Handle_Tapped;
                 MainPage.absolute.Panning += Absolute_Panning; // can be set to Handle_Panning directly?
                 MainPage.absolute.Panned += Handle_Panned; // used to deselect actionorigin
                 MainPage.absolute.Swiped += Absolute_Swiped;
@@ -250,6 +252,7 @@ namespace LinkImager.Items
 
         void Absolute_Up(object sender, DownUpEventArgs e)
         {
+            MainPage.absolute.Tapped -= Handle_Tapped;
             MainPage.absolute.Panning -= Absolute_Panning;
             MainPage.absolute.Panned -= Handle_Panned;
             MainPage.absolute.Up -= Absolute_Up;
@@ -269,13 +272,20 @@ namespace LinkImager.Items
                 Plugin.Media.Abstractions.MediaFile mediaFile = await Actions.TakePhoto();
                 if (mediaFile != null)
                 {
-                    Azure azure = new Azure();
-                    string url = await azure.UploadFileToStorage(mediaFile);
-                    // imageUrl = url;
-                    // this.Source = ImageSource.FromUri(new Uri(url));
-                    ImageUrl = url;
-                    this.Source = uriImageSource;
+                    imageMediaPath = mediaFile.Path;
                     isVisible(ShowState.IsHidden);
+                    Azure azure = new Azure();
+                    Task<string> mediaUploadProccess = azure.UploadFileToStorage(mediaFile);
+                    MainPage.mediaUploadProccesses.Add(mediaUploadProccess);
+                    new Thread(async() =>
+                    {
+                        string url = await mediaUploadProccess;
+                        MainPage.mediaUploadProccesses.Remove(mediaUploadProccess);
+                        ImageUrl = url;
+                    }).Start();
+
+                    // this.Source = ImageSource.FromUri(new Uri(url));
+
                 }
             }
             else
@@ -377,6 +387,8 @@ namespace LinkImager.Items
                 string applicationKey = await App.GetApplicationKey();
                 if(applicationKey == this.appKey)
                 {
+                    var m = MainPage.mediaUploadProccesses.Count;
+
                     // if is author
                     Azure azure = new Azure();
                     await azure.DeleteFileFromStorage(this.imageUrl);
@@ -404,42 +416,39 @@ namespace LinkImager.Items
             if(showState == ShowState.IsShown)
             {
                 this.Opacity = 1;
-                if(imageUrl == null)
+                if(ImageUrl == null)
                 {
                     this.Source = ImageSource.FromFile("camera.png");
                 }
                 else
                 {
-                    try
+                    if(imageMediaPath != null || imageUrl == "branch.jpg")
                     {
-                        // this.Source = ImageSource.FromUri(new Uri(imageUrl));
+                        this.Source = ImageSource.FromFile(ImageUrl);
+                    }
+                    else
+                    {
                         this.Source = uriImageSource;
-                    }
-                    catch(Exception ex)
-                    {
-                        // malformed uri when branch.jpg is shown
 
                     }
-
                 }
                 AssignEventHandlersWhenVisible();
             }
             else if(showState == ShowState.IsHinted)
             {
-                if (imageUrl == null)
+                if (ImageUrl == null)
                 {
                     this.Source = ImageSource.FromFile("camera.png");
                 }
                 else
-                {   
-                    try
+                {
+                    if (imageMediaPath != null || imageUrl == "branch.jpg")
                     {
-                        // this.Source = ImageSource.FromUri(new Uri(imageUrl));
-                        this.Source = uriImageSource;
+                        this.Source = ImageSource.FromFile(ImageUrl);
                     }
-                    catch(Exception ex)
+                    else
                     {
-                        // malformed uri when branch.jpg is shown
+                        this.Source = uriImageSource;
                     }
                 }
                 this.Opacity = 0.4;
@@ -472,8 +481,9 @@ namespace LinkImager.Items
         {
             appKey = (string)info.GetValue("appKey", typeof(string));
             owner = (MovableImage)info.GetValue("owner", typeof(MovableImage));
-            // imageUrl = (string)info.GetValue("imageUrl", typeof(string));
-            ImageUrl = (string)info.GetValue("imageUrl", typeof(string));
+            string url = (string)info.GetValue("imageUrl", typeof(string));
+
+            new Thread(() => SetImageUrl(url)).Start(); // using this so that all images are downloaded and cached. done with multithreading
             children = (List<MovableImage>)info.GetValue("children", typeof(List<MovableImage>));
             double x = (double)info.GetValue("x", typeof(double));
             double y = (double)info.GetValue("y", typeof(double));

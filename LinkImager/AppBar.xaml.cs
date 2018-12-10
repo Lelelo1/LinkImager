@@ -62,7 +62,6 @@ namespace LinkImager
         }
         void Handle_Share(object sender, System.EventArgs e)
         {
-
             MovableImage project = MainPage.nowLinkImage.GetProject();
             Actions.Share(project);
 

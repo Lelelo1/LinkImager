@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 using Plugin.Media.Abstractions;
 using LinkImager.Items;
 using MR.Gestures;
@@ -21,6 +22,8 @@ namespace LinkImager
         public static CachedImage backgroundImage;
         public static string standardImageName = "branch.jpg";
         public static string projectUrl;
+        // private static Task<string> mediaUploadProccess; // unsynced ultiple of these arise proably
+        public static List<Task<string>> mediaUploadProccesses = new List<Task<string>>();
         public MainPage()
         {
             InitializeComponent();
@@ -77,6 +80,7 @@ namespace LinkImager
             {
 
             }
+
             await Task.Delay(100); // so that the cachedimage get its properties correct, see movableImage
             var sizeRequest = backgroundImage.Measure(backgroundImage.Bounds.Width, backgroundImage.Bounds.Height);
 
@@ -113,29 +117,6 @@ namespace LinkImager
             Paint(child);
 
         }
-        /* refractored - added to icons to AppBar instead
-        ShowState state = ShowState.IsHidden;
-        void Button_Clicked(object sender, EventArgs e)
-        {
-            if (state.)
-                isVisible = false;
-            else
-                isVisible = true;
-            ToggleVisibilityOfMovableImages(isVisible);
-        }
-        */
-
-        /*
-        public static void ToggleVisibilityOfMovableImages(ShowState state)
-        {
-
-            var list = absolute.Children.ToList().Select((arg) => (MovableImage)arg);
-            list.ToList().ForEach((MovableImage obj) => {
-                obj.isVisible(state);
-            });
-            // and also set visibility of those movableimages that arent in absolute
-        }
-        */
         public static void ToggleVisibilityOfMovableImages(ShowState showState)
         {
             Adjust(nowLinkImage.GetProject(), showState);
@@ -143,6 +124,7 @@ namespace LinkImager
         private static void Adjust(MovableImage movableImage, ShowState showState)
         {
             movableImage.isVisible(showState);
+            // new Thread(() => movableImage.isVisible(showState)).Start(); causes uiKit error need to be called from ui thread
             foreach(MovableImage child in movableImage.children)
             {
                 Adjust(child, showState);
@@ -150,6 +132,7 @@ namespace LinkImager
         }
         public static async void Remove(MovableImage movableImage)
         {
+
             string url = movableImage.ImageUrl;
             nowLinkImage.ImageUrl = standardImageName;
             Display(nowLinkImage);
@@ -160,6 +143,12 @@ namespace LinkImager
                 if(movableImage.ImageUrl != StatusImages.ImageDeleted)
                 {
                     // Delete from cloud only if is author
+                    if (mediaUploadProccesses.Count >= 1)
+                    {
+                        Task<string> mediaUpladProccess = mediaUploadProccesses[mediaUploadProccesses.Count - 1];
+                        url = await mediaUpladProccess;
+
+                    }
                     Azure azure = new Azure();
                     await azure.DeleteFileFromStorage(url);
                 }
@@ -202,19 +191,25 @@ namespace LinkImager
                 // make enumeration maybe for statusimages. Here check if is branch or azure branch
                 if (nowLinkImage.ImageUrl == standardImageName || nowLinkImage.ImageUrl == StatusImages.ImageDeleted)
                 {
+
                     MediaFile mediaFile = await Actions.TakePhoto();
                     if (mediaFile != null)
                     {
-                        nowLinkImage.ImageUrl = mediaFile.Path; // works faster. Whatch out for unsynced export issues. 
+                        
+                        nowLinkImage.ImageUrl = mediaFile.Path; // works faster. Whatch out but rasies the specified blob does not exist when delete. 
                         Display(nowLinkImage);
-                        Azure azure = new Azure();
-                        string url = await azure.UploadFileToStorage(mediaFile); // takes time
-                        nowLinkImage.ImageUrl = url;
 
+                        Azure azure = new Azure();
+                        Task<string> mediaUploadProccess = azure.UploadFileToStorage(mediaFile);
+                        mediaUploadProccesses.Add(mediaUploadProccess);
+                        string url = await mediaUploadProccess; // takes time
+                        mediaUploadProccesses.Remove(mediaUploadProccess);
+                        nowLinkImage.ImageUrl = url;
                     }
                 }
+
             }
-            actionOrigin = null; // for solving android issue. Check if it does not hurt iOS
+            actionOrigin = null; // for solving android issue. Check if it does not hurt iOS. It don't
         }
 
         async void Absolute_DoubleTapped(object sender, TapEventArgs e)
@@ -350,8 +345,16 @@ namespace LinkImager
             cachedImage.Success -= Handle_Success;
             BoundsAwaiter = new TaskCompletionSource<Rectangle>();
             cachedImage.Success += Handle_Success;
+            try
+            {
+                cachedImage.Source = displayLinkImage.ImageUrl;
 
-            cachedImage.Source = displayLinkImage.ImageUrl;
+            }
+            catch(Exception ex)
+            {
+
+                cachedImage.Source = FileImageSource.FromFile(displayLinkImage.ImageUrl);
+            }
             
             return BoundsAwaiter.Task;
         }
