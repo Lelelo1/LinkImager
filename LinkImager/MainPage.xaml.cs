@@ -135,6 +135,15 @@ namespace LinkImager
 
             string url = movableImage.ImageUrl;
             nowLinkImage.ImageUrl = standardImageName;
+            if(movableImage.children.Count == 0 && movableImage.owner != null) // move one step back when deleting an end branch
+            {
+                nowLinkImage = movableImage.owner;
+                nowLinkImage.Remove(movableImage);
+            }
+            else
+            {
+
+            }
             Display(nowLinkImage);
             // condition here
             string applicationKey = await App.GetApplicationKey();
@@ -155,7 +164,7 @@ namespace LinkImager
             }
             else
             {
-                await App.Current.MainPage.DisplayAlert("Not author", "Not author so image was not removed from cloud", "ok");
+                // await App.Current.MainPage.DisplayAlert("Not author", "Not author so image was not removed from cloud", "ok");
             }
 
         }

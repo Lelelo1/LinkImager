@@ -507,5 +507,11 @@ namespace LinkImager.Items
             }
             return temp;
         }
+        // if is displayed and to delete a child
+        public void Remove(MovableImage directChild)
+        {
+            MainPage.absolute.Children.Remove(directChild);
+            this.children.Remove(directChild);
+        }
     }
 }

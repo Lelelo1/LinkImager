@@ -119,23 +119,14 @@ namespace LinkImager
                     stream.Close();
 
                     bool existed = File.Exists(fullPath);
-                    // CrossShareFile.Current.ShareLocalFile(fullPath);
-                    if(Device.RuntimePlatform == Device.iOS)
-                    {
-                        //CrossShareFile.Current.ShareLocalFile(fullPath); // checking if my custom share works on old pad
-                        await DependencyService.Get<IShare>().Show("", "", fullPath);
-                    }
-                    else
-                    {
-                        // https://xamarinhelp.com/share-dialog-xamarin-forms/
-                        string p = DependencyService.Get<IExternalStorage>().Get();
+                    //CrossShareFile.Current.ShareLocalFile(fullPath); // does no work on old ipad iOS version 9
+                    /*
+                     * some mrgerstures issues on old ipad
+                     *
+                     *                    
+                    */
+                    await DependencyService.Get<IShare>().Show("", "", fullPath);
 
-                        await DependencyService.Get<IShare>().Show("title", "message", p + System.IO.Path.DirectorySeparatorChar + name);
-                    }
-
-
-
-                    
                 }
 
 
