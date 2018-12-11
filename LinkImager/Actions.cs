@@ -122,7 +122,8 @@ namespace LinkImager
                     // CrossShareFile.Current.ShareLocalFile(fullPath);
                     if(Device.RuntimePlatform == Device.iOS)
                     {
-                        CrossShareFile.Current.ShareLocalFile(fullPath);
+                        //CrossShareFile.Current.ShareLocalFile(fullPath); // checking if my custom share works on old pad
+                        await DependencyService.Get<IShare>().Show("", "", fullPath);
                     }
                     else
                     {

@@ -280,7 +280,7 @@ namespace LinkImager.Items
                     new Thread(async() =>
                     {
                         string url = await mediaUploadProccess;
-                        MainPage.mediaUploadProccesses.Remove(mediaUploadProccess);
+                        MainPage.mediaUploadProccesses.Remove(mediaUploadProccess); // might not increase preformence
                         ImageUrl = url;
                     }).Start();
 
@@ -399,7 +399,7 @@ namespace LinkImager.Items
                 else
                 {
                     // is not author - don't remove from cloud
-                    await App.Current.MainPage.DisplayAlert("Not author", "Not author so image was not removed from cloud", "ok");
+                    // await App.Current.MainPage.DisplayAlert("Not author", "Not author so image was not removed from cloud", "ok");
                 }
                 // need to be removed from parent
                 if (owner != null)
