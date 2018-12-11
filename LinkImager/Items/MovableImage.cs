@@ -144,7 +144,7 @@ namespace LinkImager.Items
                 this.Tapped -= Handle_TappedWhenInVisible;
 
                 this.Down += Handle_Down;
-                // this.Tapped += Handle_Tapped;
+                this.Tapped += Handle_Tapped;
                 this.LongPressed += Handle_LongPressed;
             }
             else
@@ -221,7 +221,8 @@ namespace LinkImager.Items
 
             if(Device.RuntimePlatform == Device.Android)
             {
-                MainPage.absolute.Tapped += Handle_Tapped;
+                MainPage.mainPage.DeAssignGestures();
+                // MainPage.absolute.Tapped += Handle_Tapped;
                 MainPage.absolute.Panning += Absolute_Panning; // can be set to Handle_Panning directly?
                 MainPage.absolute.Panned += Handle_Panned; // used to deselect actionorigin
                 MainPage.absolute.Swiped += Absolute_Swiped;
@@ -258,7 +259,7 @@ namespace LinkImager.Items
             MainPage.absolute.Up -= Absolute_Up;
             MainPage.absolute.Swiped -= Absolute_Swiped;
             MainPage.actionOrigin = null;
-
+            MainPage.mainPage.AssignGestures();
             // App.Current.MainPage.DisplayAlert("Up", "Absolute up", "ok");
 
         }
@@ -266,6 +267,7 @@ namespace LinkImager.Items
 
         async void Handle_Tapped(object sender, TapEventArgs e)
         {
+
             // App.Current.MainPage.DisplayAlert("Tapped", " you tapped", "ok");
             if(imageUrl == null)
             {

@@ -179,6 +179,15 @@ namespace LinkImager
             Absolute.Panned += Absolute_Panned;
             Absolute.Swiped += Absolute_Swiped;
         }
+        public void DeAssignGestures() // android uses to toggle to between eventhandlers for Aboslute
+        {
+            Absolute.Down -= Absolute_Down;
+            Absolute.Tapped -= Absolute_Tapped;
+            Absolute.DoubleTapped -= Absolute_DoubleTapped;
+            Absolute.LongPressed -= Absolute_LongPressed;
+            Absolute.Panned -= Absolute_Panned;
+            Absolute.Swiped -= Absolute_Swiped;
+        }
         // used to give panned a start x y position
         private DownUpEventArgs down;
         void Absolute_Down(object sender, DownUpEventArgs e)
