@@ -387,8 +387,11 @@ namespace LinkImager.Items
                 string applicationKey = await App.GetApplicationKey();
                 if(applicationKey == this.appKey)
                 {
-                    var m = MainPage.mediaUploadProccesses.Count;
 
+                    if (MainPage.mediaUploadProccesses.Count >= 1)
+                    {
+                        await MainPage.mediaUploadProccesses[MainPage.mediaUploadProccesses.Count - 1];
+                    }
                     // if is author
                     Azure azure = new Azure();
                     await azure.DeleteFileFromStorage(this.imageUrl);
