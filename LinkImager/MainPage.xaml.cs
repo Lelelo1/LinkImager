@@ -219,9 +219,10 @@ namespace LinkImager
 
 
             }
-
+            /*
             string appKey = await App.GetApplicationKey();
             await App.Current.MainPage.DisplayAlert("info", "Your app key is " + appKey,  "ok");
+            */           
         }
 
 
