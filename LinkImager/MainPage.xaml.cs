@@ -74,7 +74,7 @@ namespace LinkImager
             try
             {
                 // bounds = await GetBoundsAsync(backgroundImage, movableImage);
-                bounds = await ImageWaiter.WaitForBoundsAsync(backgroundImage, nowLinkImage);
+                bounds = await (await ImageWaiter.WaitForBoundsAsync(backgroundImage, nowLinkImage));
 
             }
             catch(Exception ex)
@@ -362,16 +362,16 @@ namespace LinkImager
             BoundsAwaiter.SetResult(((CachedImage)s).Bounds);
 
         };
-        public static Task<Rectangle> WaitForBoundsAsync(CachedImage cachedImage, MovableImage displayLinkImage)
+        public static async Task<Task<Rectangle>> WaitForBoundsAsync(CachedImage cachedImage, MovableImage displayLinkImage)
         {
             // unregister so that eventhandlers doesn't stack up
             cachedImage.Success -= Handle_Success;
             BoundsAwaiter = new TaskCompletionSource<Rectangle>();
             cachedImage.Success += Handle_Success;
+
             try
             {
-                cachedImage.Source = displayLinkImage.ImageUrl;
-
+                cachedImage.Source = await displayLinkImage.GetImageUrlAsync();
             }
             catch(Exception ex)
             {

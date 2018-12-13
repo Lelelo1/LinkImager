@@ -64,6 +64,27 @@ namespace LinkImager.Items
 
             }
         }
+        public async Task<string> GetImageUrlAsync()
+        {
+
+            if(imageUrl == StatusImages.ImageDeleted)
+            {
+                return imageUrl;
+            }
+            else
+            {
+                bool exists = await Azure.Exists(imageUrl);
+                if(exists)
+                {
+                    return imageUrl;
+                }
+                else
+                {
+                    imageUrl = StatusImages.ImageDeleted;
+                    return imageUrl;
+                }
+            }
+        }
         private UriImageSource uriImageSource;
         public List<MovableImage> children = new List<MovableImage>();
 
