@@ -50,6 +50,7 @@ namespace LinkImager
             // if not load project data file
             absolute.BackgroundColor = Color.Transparent;
             nowLinkImage = Actions.ProjectFrom(projectUrl);
+
             /*
             nowLinkImage = new MovableImage(standardImageName);
             backgroundimage.Source = ImageSource.FromFile(nowLinkImage.imageUrl);
@@ -89,6 +90,7 @@ namespace LinkImager
             {
                 Paint(obj);
             });
+
         }
         
         // Paint from paint
@@ -158,8 +160,10 @@ namespace LinkImager
                         url = await mediaUpladProccess;
 
                     }
+
                     Azure azure = new Azure();
                     await azure.DeleteFileFromStorage(url);
+                    await CachedImage.InvalidateCache(url, FFImageLoading.Cache.CacheType.All); // removing local cached image as well - otherwise stored for 1 day
                 }
             }
             else

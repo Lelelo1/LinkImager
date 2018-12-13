@@ -36,6 +36,7 @@ namespace LinkImager.iOS
         {
             // url.StartAccessingSecurityScopedResource();
             // check if url is image (user has edited image in another program
+
             App.Current.MainPage = new AppBar(new MainPage(url.Path));
             
 

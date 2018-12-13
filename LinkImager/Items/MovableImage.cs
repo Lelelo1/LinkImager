@@ -433,7 +433,7 @@ namespace LinkImager.Items
                     }
                     else
                     {
-                        this.Source = uriImageSource;
+                        this.Source = uriImageSource; // not displayed when 
 
                     }
                 }
@@ -488,7 +488,7 @@ namespace LinkImager.Items
             owner = (MovableImage)info.GetValue("owner", typeof(MovableImage));
             string url = (string)info.GetValue("imageUrl", typeof(string));
 
-            new Thread(() => SetImageUrl(url)).Start(); // using this so that all images are downloaded and cached. done with multithreading
+            new Thread(() => SetImageUrl(url)).Start();
             children = (List<MovableImage>)info.GetValue("children", typeof(List<MovableImage>));
             double x = (double)info.GetValue("x", typeof(double));
             double y = (double)info.GetValue("y", typeof(double));
@@ -499,8 +499,9 @@ namespace LinkImager.Items
             AssignEventHandlersWhenInVisible();
 
         }
-        // getting the ultimate owner
-        public MovableImage GetProject()
+
+            // getting the ultimate owner
+            public MovableImage GetProject()
         {
             MovableImage temp = this;
             while(temp.owner != null)

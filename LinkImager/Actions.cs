@@ -134,6 +134,7 @@ namespace LinkImager
         }
         public static MovableImage ProjectFrom(string path)
         {
+
             string tempName = "temp.ii";
             string tempDir = System.IO.Path.GetTempPath();
             string fullPath = Path.Combine(tempDir, tempName);
@@ -143,6 +144,7 @@ namespace LinkImager
             BinaryFormatter formatter = new BinaryFormatter();
             MovableImage project = (MovableImage)formatter.Deserialize(stream);
             stream.Close();
+
             return project;
         }
     }
