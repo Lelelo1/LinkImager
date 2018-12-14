@@ -108,6 +108,7 @@ namespace LinkImager
                 {
                     if(MainPage.mediaUploadProccesses.Count >= 1)
                     {
+
                         await MainPage.mediaUploadProccesses[MainPage.mediaUploadProccesses.Count - 1];
                     }
                     name += ".ii";

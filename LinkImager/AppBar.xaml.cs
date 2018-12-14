@@ -3,6 +3,8 @@ using System.Runtime.Serialization.Formatters.Binary;
 using LinkImager.Items;
 using Xamarin.Forms;
 using Plugin.ShareFile;
+using System.Threading.Tasks;
+
 namespace LinkImager
 {
     public partial class AppBar : NavigationPage
@@ -62,6 +64,7 @@ namespace LinkImager
         }
         void Handle_Share(object sender, System.EventArgs e)
         {
+
             MovableImage project = MainPage.nowLinkImage.GetProject();
             Actions.Share(project);
 

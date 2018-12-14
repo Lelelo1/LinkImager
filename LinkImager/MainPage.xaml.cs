@@ -156,9 +156,8 @@ namespace LinkImager
                     // Delete from cloud only if is author
                     if (mediaUploadProccesses.Count >= 1)
                     {
-                        Task<string> mediaUpladProccess = mediaUploadProccesses[mediaUploadProccesses.Count - 1];
-                        url = await mediaUpladProccess;
-
+                        Task<string> mediaUploadProccess = mediaUploadProccesses[mediaUploadProccesses.Count - 1];
+                        url = await mediaUploadProccess;
                     }
 
                     Azure azure = new Azure();
@@ -224,23 +223,26 @@ namespace LinkImager
                     MediaFile mediaFile = await Actions.TakePhoto();
                     if (mediaFile != null)
                     {
-                        
-                        nowLinkImage.ImageUrl = mediaFile.Path; // works faster. Whatch out but rasies the specified blob does not exist when delete. 
-                        Display(nowLinkImage);
 
-                        Azure azure = new Azure();
-                        Task<string> mediaUploadProccess = azure.UploadFileToStorage(mediaFile);
-                        mediaUploadProccesses.Add(mediaUploadProccess);
-                        string url = await mediaUploadProccess; // takes time
-                        mediaUploadProccesses.Remove(mediaUploadProccess);
-                        nowLinkImage.ImageUrl = url;
+                        nowLinkImage.imageMediaPath = mediaFile.Path; // works faster. Whatch out but rasies the specified blob does not exist when delete. 
+                        Display(nowLinkImage);
+                        Task<string> mediaUploadTask = MediaUpload(mediaFile);
+                        mediaUploadProccesses.Add(mediaUploadTask);
+                        await mediaUploadTask;
+                        mediaUploadProccesses.Remove(mediaUploadTask);
                     }
                 }
 
             }
             // actionOrigin = null; // for solving android issue. Check if it does not hurt iOS. It don't
         }
+        private async Task<string> MediaUpload(MediaFile mediaFile)
+        {
+            Azure azure = new Azure();
+            nowLinkImage.ImageUrl = await azure.UploadFileToStorage(mediaFile); // is set here so when share image are truly set
 
+            return nowLinkImage.ImageUrl;
+        }
         async void Absolute_DoubleTapped(object sender, TapEventArgs e)
         {
             if(nowLinkImage.ImageUrl != standardImageName && nowLinkImage.owner == null)
@@ -378,7 +380,9 @@ namespace LinkImager
 
             try
             {
-                cachedImage.Source = await displayLinkImage.GetImageUrlAsync();
+                string url = await displayLinkImage.GetImageUrlAsync();
+
+                cachedImage.Source = url;
             }
             catch(Exception ex)
             {

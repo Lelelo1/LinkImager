@@ -498,6 +498,7 @@ namespace LinkImager.Items
             string url = (string)info.GetValue("imageUrl", typeof(string));
 
             new Thread(() => SetImageUrl(url)).Start();
+            SetImageUrl(url);
             children = (List<MovableImage>)info.GetValue("children", typeof(List<MovableImage>));
             double x = (double)info.GetValue("x", typeof(double));
             double y = (double)info.GetValue("y", typeof(double));
