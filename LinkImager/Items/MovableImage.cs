@@ -171,7 +171,7 @@ namespace LinkImager.Items
             else
             {
                 this.Down -= Handle_DowniOS;
-                // this.Up -= Handle_UpiOS; not used
+                // MainPage.absolute.Up -= Handle_UpiOS;
                 this.Tapped -= Handle_Tapped;
                 this.Tapped -= Handle_TappedWhenInVisible;
                 this.LongPressed -= Handle_LongPressed;
@@ -180,7 +180,7 @@ namespace LinkImager.Items
                 this.Swiped -= Handle_Swiped;
 
                 this.Down += Handle_DowniOS;
-                // this.Up += Handle_UpiOS;
+                // MainPage.absolute.Up += Handle_UpiOS;
                 this.Tapped += Handle_Tapped;
                 this.LongPressed += Handle_LongPressed;
                 this.Panning += Handle_Panning;
@@ -198,13 +198,13 @@ namespace LinkImager.Items
             this.LongPressed -= Handle_LongPressed;
             this.Tapped -= Handle_TappedWhenInVisible;
             this.Down -= Handle_DowniOS;
-            
+            // MainPage.absolute.Up -= Handle_UpiOS;
             this.Panning -= Handle_Panning;
             this.Panned -= Handle_Panned;
             this.Swiped -= Handle_Swiped;
 
             this.Down += Handle_DowniOS; // rename maybe
-
+            // MainPage.absolute.Up += Handle_UpiOS;
             this.Tapped += Handle_TappedWhenInVisible;
             this.LongPressed += null;
             this.Swiped += null;
@@ -219,30 +219,33 @@ namespace LinkImager.Items
 
                 MainPage.Display(this);
             }
-              
+            // MainPage.actionOrigin = null;
+            MainPage.mainPage.AssignGestures(); // this and downiOS occur both on android
         }
 
         void Handle_DowniOS(object sender, DownUpEventArgs e)
         {
 
-            MainPage.actionOrigin = this; // For weird android. down prevents tapped from being called
+            // MainPage.actionOrigin = this;
+            MainPage.mainPage.DeAssignGestures();
+             // For weird android. down prevents tapped from being called
+            /*
             if(Device.RuntimePlatform == Device.Android)
             {
                 Handle_TappedWhenInVisible(sender, null);
             }
-
+            */
         }
 
 
         // dragging is listened for on absolute when down on this
         void Handle_Down(object sender, DownUpEventArgs e)
         {
-            MainPage.actionOrigin = this;
-
+            // MainPage.actionOrigin = this;
+            MainPage.mainPage.DeAssignGestures();
 
             if(Device.RuntimePlatform == Device.Android)
             {
-                MainPage.mainPage.DeAssignGestures();
                 // MainPage.absolute.Tapped += Handle_Tapped;
                 MainPage.absolute.Panning += Absolute_Panning; // can be set to Handle_Panning directly?
                 MainPage.absolute.Panned += Handle_Panned; // used to deselect actionorigin
@@ -253,25 +256,6 @@ namespace LinkImager.Items
 
         }
 
-        void Handle_UpiOS(object sender, DownUpEventArgs e)
-        {
-            // previously unset actionOrigin
-            // but occurs prior to panned in absolute
-            MainPage.actionOrigin = null; // is now used when visible only - created drag bug
-
-        }
-
-
-        // deselect
-        void Handle_Up(object sender, DownUpEventArgs e)
-        {
-
-            MainPage.actionOrigin = null;
-            this.Panning -= Handle_Panning;
-            this.Swiped -= Handle_Swiped;
-            // this.Up -= Handle_Up;
-        }
-
         void Absolute_Up(object sender, DownUpEventArgs e)
         {
             MainPage.absolute.Tapped -= Handle_Tapped;
@@ -279,8 +263,8 @@ namespace LinkImager.Items
             MainPage.absolute.Panned -= Handle_Panned;
             MainPage.absolute.Up -= Absolute_Up;
             MainPage.absolute.Swiped -= Absolute_Swiped;
-            MainPage.actionOrigin = null;
-            MainPage.mainPage.AssignGestures();
+            // MainPage.actionOrigin = null;
+            // MainPage.mainPage.AssignGestures();
             // App.Current.MainPage.DisplayAlert("Up", "Absolute up", "ok");
 
         }
@@ -316,7 +300,8 @@ namespace LinkImager.Items
                 // do what when tapping shown, display context menu - open image
                 // in editor
             }
-            MainPage.actionOrigin = null;
+            // MainPage.actionOrigin = null;
+            MainPage.mainPage.AssignGestures();
         }
 
         async void Handle_LongPressed(object sender, LongPressEventArgs e)
@@ -333,7 +318,8 @@ namespace LinkImager.Items
                 this.Source = uriImageSource;
                 isVisible(ShowState.IsHidden);
             }
-            MainPage.actionOrigin = null;
+            // MainPage.actionOrigin = null;
+            MainPage.mainPage.AssignGestures();
         }
 
         //using absolute pan cordinate then used by this
@@ -370,14 +356,15 @@ namespace LinkImager.Items
 
                 MainPage.absolute.RaiseChild(this);
                 // Rectangle = new Rectangle(newPoint, rectangle.Size); //
-
+                // MainPage.actionOrigin = null;
+                // MainPage.mainPage.AssignGestures(); // maybe not here
             }
         }
         // for deselection only
         void Handle_Panned(object sender, PanEventArgs e)
         {
-            MainPage.actionOrigin = null;
-
+            // MainPage.actionOrigin = null;
+            MainPage.mainPage.AssignGestures();
         }
 
         void Absolute_Swiped(object sender, SwipeEventArgs e)
@@ -392,7 +379,7 @@ namespace LinkImager.Items
             // App.Current.MainPage.DisplayAlert("Swiped", " you swiped", "ok");
             if(imageUrl == null || imageUrl == "camera.png" || imageUrl == StatusImages.ImageDeleted)
             {
-                MainPage.actionOrigin = null;
+                // MainPage.actionOrigin = null;
                 this.Opacity = 0;
                 MainPage.absolute.Children.Remove(this);
                 // need to be removed from parent
@@ -404,7 +391,7 @@ namespace LinkImager.Items
             else
             {
 
-                MainPage.actionOrigin = null;
+                // MainPage.actionOrigin = null;
                 this.Opacity = 0;
                 MainPage.absolute.Children.Remove(this);
                 string applicationKey = await App.GetApplicationKey();
@@ -430,7 +417,8 @@ namespace LinkImager.Items
                     owner.children.Remove(this);
                 }
             }
-
+            // MainPage.actionOrigin = null;
+            MainPage.mainPage.AssignGestures();
         }
         // other methods
         private async void SetAppKey()

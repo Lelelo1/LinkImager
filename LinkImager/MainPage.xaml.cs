@@ -177,6 +177,7 @@ namespace LinkImager
         public void AssignGestures()
         {
             Absolute.Down += Absolute_Down;
+            // Absolute.Up += Absolute_Up;
             Absolute.Tapped += Absolute_Tapped;
             Absolute.DoubleTapped += Absolute_DoubleTapped;
             Absolute.LongPressed += Absolute_LongPressed;
@@ -186,6 +187,7 @@ namespace LinkImager
         public void DeAssignGestures() // android uses to toggle to between eventhandlers for Aboslute
         {
             Absolute.Down -= Absolute_Down;
+            // Absolute.Up -= Absolute_Up;
             Absolute.Tapped -= Absolute_Tapped;
             Absolute.DoubleTapped -= Absolute_DoubleTapped;
             Absolute.LongPressed -= Absolute_LongPressed;
@@ -194,16 +196,21 @@ namespace LinkImager
         }
         // used to give panned a start x y position
         private DownUpEventArgs down;
-        void Absolute_Down(object sender, DownUpEventArgs e)
+        void Absolute_Down(object sender, DownUpEventArgs e) // on iOS occurs simontaniously with MovableImage down
         {
             down = e;
             // actionOrigin = null; // using this creates panned down left create bug
+            /*
             if(Device.RuntimePlatform == Device.iOS)
             {
                 actionOrigin = null;
             }
+            */
         }
-
+        void Absolute_Up(object sender, DownUpEventArgs e)
+        {
+            actionOrigin = null;
+        }
         async void Absolute_Tapped(object sender, TapEventArgs e)
         {
             // await App.Current.MainPage.DisplayAlert("info", "url is: " + projectUrl, "ok");
@@ -231,7 +238,7 @@ namespace LinkImager
                 }
 
             }
-            actionOrigin = null; // for solving android issue. Check if it does not hurt iOS. It don't
+            // actionOrigin = null; // for solving android issue. Check if it does not hurt iOS. It don't
         }
 
         async void Absolute_DoubleTapped(object sender, TapEventArgs e)
