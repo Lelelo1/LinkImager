@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using LinkImager.Items;
 using Plugin.FilePicker.Abstractions;
@@ -76,6 +77,8 @@ namespace LinkImager
             }
             return null;
         }
+        static byte[] key = { 23, 120, 78, 3, 4, 138, 45, 16};
+        static byte[] iv = { 13, 34, 56, 4, 12, 89, 67, 62};
         public static async void Share(MovableImage project)
         {
 
@@ -111,12 +114,16 @@ namespace LinkImager
 
                         await MainPage.mediaUploadProccesses[MainPage.mediaUploadProccesses.Count - 1];
                     }
+                    DESCryptoServiceProvider dESCrypto = new DESCryptoServiceProvider();
                     name += ".ii";
                     string fullPath = Path.Combine(tempDir, name);
                     Stream stream = File.Open(fullPath, FileMode.Create);
+                    var d = dESCrypto.CreateEncryptor(key, iv); // can only use DES and 8 bytes for key and iv: https://stackoverflow.com/questions/53816508/system-security-cryptpgraphicunexpectedoperationexception-when-creating-icryptot
+                    CryptoStream cryptoStream = new CryptoStream(stream, d, CryptoStreamMode.Write);
                     BinaryFormatter formatter = new BinaryFormatter();
 
-                    formatter.Serialize(stream, project);
+                    formatter.Serialize(cryptoStream, project);
+                    cryptoStream.Close();
                     stream.Close();
 
                     bool existed = File.Exists(fullPath);
@@ -135,17 +142,19 @@ namespace LinkImager
         }
         public static MovableImage ProjectFrom(string path)
         {
-
+            DESCryptoServiceProvider dESCrypto = new DESCryptoServiceProvider();
             string tempName = "temp.ii";
             string tempDir = System.IO.Path.GetTempPath();
             string fullPath = Path.Combine(tempDir, tempName);
             File.Copy(path, fullPath, true);
             Stream stream = File.Open(fullPath, FileMode.Open);
+            var d = dESCrypto.CreateDecryptor(key, iv);
+            CryptoStream cryptoStream = new CryptoStream(stream, d, CryptoStreamMode.Read);
             // Stream stream = new FileStream(new, FileAccess.Read);
             BinaryFormatter formatter = new BinaryFormatter();
-            MovableImage project = (MovableImage)formatter.Deserialize(stream);
+            MovableImage project = (MovableImage)formatter.Deserialize(cryptoStream);
+            cryptoStream.Close();
             stream.Close();
-
             return project;
         }
     }
