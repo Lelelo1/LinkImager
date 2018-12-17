@@ -57,6 +57,9 @@ namespace LinkImager.Items
                     imageUrl = StatusImages.ImageDeleted;
                     uriImageSource.Uri = new Uri(imageUrl);
                 }
+                this.Source = uriImageSource; // ensuring image is truly downloaded. all movableImages propely displayed.
+                isVisible(AppBar.showState);
+
             }
             catch(Exception ex)
             {
@@ -203,8 +206,6 @@ namespace LinkImager.Items
             this.Panned -= Handle_Panned;
             this.Swiped -= Handle_Swiped;
 
-            this.Down += Handle_DowniOS; // rename maybe
-            // MainPage.absolute.Up += Handle_UpiOS;
             this.Tapped += Handle_TappedWhenInVisible;
             this.LongPressed += null;
             this.Swiped += null;
@@ -220,9 +221,9 @@ namespace LinkImager.Items
                 MainPage.Display(this);
             }
             // MainPage.actionOrigin = null;
-            MainPage.mainPage.AssignGestures(); // this and downiOS occur both on android
+            // MainPage.mainPage.AssignGestures(); // this and downiOS occur both on android
         }
-
+        
         void Handle_DowniOS(object sender, DownUpEventArgs e)
         {
 
@@ -236,7 +237,6 @@ namespace LinkImager.Items
             }
             */
         }
-
 
         // dragging is listened for on absolute when down on this
         void Handle_Down(object sender, DownUpEventArgs e)
@@ -498,7 +498,6 @@ namespace LinkImager.Items
             string url = (string)info.GetValue("imageUrl", typeof(string));
 
             new Thread(() => SetImageUrl(url)).Start();
-            SetImageUrl(url);
             children = (List<MovableImage>)info.GetValue("children", typeof(List<MovableImage>));
             double x = (double)info.GetValue("x", typeof(double));
             double y = (double)info.GetValue("y", typeof(double));

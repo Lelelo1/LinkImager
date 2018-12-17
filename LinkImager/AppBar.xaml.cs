@@ -16,7 +16,7 @@ namespace LinkImager
             AppBar.SetHasBackButton(this, true);
             this.BarTextColor = Color.White;
         }
-        ShowState showState = ShowState.IsHidden;
+        public static ShowState showState = ShowState.IsHidden;
         void Handle_Hint(object sender, System.EventArgs e)
         {
             if(showState == ShowState.IsHidden)
