@@ -25,8 +25,6 @@
 	<string>1.0</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
-	<key>CFBundleName</key>
-	<string>LinkImager</string>
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/AppIcon.appiconset</string>
 	<key>NSCameraUsageDescription</key>
@@ -59,12 +57,18 @@
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>CFBundleTypeName</key>
-			<string>LinkImager file</string>
+			<string>LinkImager project file</string>
 		</dict>
 	</array>
 	<key>XSLaunchImageAssets</key>
 	<string>Assets.xcassets/LaunchImage.launchimage</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0.0</string>
+	<string>1.0.1</string>
+	<key>CFBundleName</key>
+	<string>LinkImager</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>The permission is needed for an internal tool to work</string>
+	<key>UIRequiresFullScreen</key>
+	<true/>
 </dict>
 </plist>
