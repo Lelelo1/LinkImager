@@ -14,7 +14,6 @@ namespace LinkImager
     public class Actions
     {
 
-
         public static async Task<MediaFile> TakePhoto()
         {
             bool initialized = await CrossMedia.Current.Initialize();
@@ -111,7 +110,6 @@ namespace LinkImager
                 {
                     if(MainPage.mediaUploadProccesses.Count >= 1)
                     {
-
                         await MainPage.mediaUploadProccesses[MainPage.mediaUploadProccesses.Count - 1];
                     }
                     DESCryptoServiceProvider dESCrypto = new DESCryptoServiceProvider();
@@ -133,7 +131,23 @@ namespace LinkImager
                      *
                      *                    
                     */
-                    await DependencyService.Get<IShare>().Show("", "", fullPath);
+
+                    if(Device.RuntimePlatform == Device.Android)
+                    {
+                       string toPath =  DependencyService.Get<IExternalStorage>().Get(); // Documents
+                        string sharePath = Path.Combine(toPath, name);
+                     
+                        // File.(fullPath, toPath);
+
+                        await DependencyService.Get<IShare>().Show("", "", sharePath);
+                        // delete sharepath
+                        File.Delete(sharePath);
+                    }
+                    else
+                    {
+                        await DependencyService.Get<IShare>().Show("", "", fullPath);
+                    }
+
 
                 }
 

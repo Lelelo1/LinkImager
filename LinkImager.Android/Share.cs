@@ -34,7 +34,7 @@ namespace LinkImager.Droid
                     break;
                 default:
                     // contentType = "application/octetstream";
-                    contentType = "text/*";
+                    contentType = "image/*";
                     break;
             }
 
