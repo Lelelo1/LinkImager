@@ -4,6 +4,7 @@ using Android.Content;
 using Android.Net;
 using Android.Support.V4.Content;
 using Android.Webkit;
+using Java.IO;
 using LinkImager;
 using LinkImager.Droid;
 
@@ -41,13 +42,15 @@ namespace LinkImager.Droid
             // var info = MimeTypeMap.Singleton.GetMimeTypeFromExtension(extension);
 
             var intent = new Intent(Intent.ActionSend);
+
             intent.SetType(contentType);
-            var uri = Android.Net.Uri.Parse("file://" + filePath);
+            // var uri = Android.Net.Uri.Parse("file://" + filePath);
+
+            var uri = FileProvider.GetUriForFile(_context, _context.PackageName + ".fileprovider", new File(filePath));
 
             intent.PutExtra(Intent.ExtraStream, uri);
 
             // Android.OS.Environment.g
-            string authority = _context.PackageName + ".fileprovider";
             Java.IO.File file = new Java.IO.File(uri.Path);
             
             // var v = FileProvider.GetUriForFile(_context, authority , file);

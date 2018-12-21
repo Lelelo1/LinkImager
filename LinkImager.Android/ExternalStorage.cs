@@ -8,7 +8,7 @@ namespace LinkImager.Droid
     {
         public string Get()
         {
-            return Android.OS.Environment.GetExternalStoragePublicDirectory(Android.OS.Environment.DirectoryDocuments).Path;
+            return Android.OS.Environment.GetExternalStoragePublicDirectory(Android.OS.Environment.DirectoryDocuments).AbsolutePath;
         }
     }
 }

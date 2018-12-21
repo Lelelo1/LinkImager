@@ -4,6 +4,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using LinkImager.Items;
+using Plugin.FilePicker;
 using Plugin.FilePicker.Abstractions;
 using Plugin.Media;
 using Plugin.Media.Abstractions;
@@ -134,14 +135,45 @@ namespace LinkImager
 
                     if(Device.RuntimePlatform == Device.Android)
                     {
-                       string toPath =  DependencyService.Get<IExternalStorage>().Get(); // Documents
+                        /*
+                        // Plugin.FilePicker.CrossFilePicker.Current.SaveFile
+                        FileData fileData = new FileData(tempDir, name, () => { return File.OpenRead(fullPath); }, null);
+                        await CrossFilePicker.Current.SaveFile(fileData);
+                        */
+                        /*
+                        string toPath =  DependencyService.Get<IExternalStorage>().Get(); // Documents
                         string sharePath = Path.Combine(toPath, name);
-                     
+                        var b = File.Exists(toPath);
+                        File.Create(sharePath);
+                        var c = File.Exists(sharePath);
+                        */
+                        /*                       
+                        if(!File.Exists(toPath))
+                        {
+                            Directory.CreateDirectory(toPath);
+                        }
+                        await Plugin.Permissions.CrossPermissions.Current.CheckPermissionStatusAsync(Plugin.Permissions.Abstractions.Permission.Storage);
+                        try
+                        {
+                            File.Create(sharePath);
+                        }catch(Exception ex)
+                        {
+
+                        }
+                        try
+                        {
+                            File.Copy(fullPath, sharePath);
+                        }
+                        catch (Exception ex)
+                        {
+
+                        }
+                        */
                         // File.(fullPath, toPath);
 
-                        await DependencyService.Get<IShare>().Show("", "", sharePath);
+                        await DependencyService.Get<IShare>().Show("", "", fullPath);
                         // delete sharepath
-                        File.Delete(sharePath);
+                        // File.Delete(sharePath);
                     }
                     else
                     {
