@@ -56,7 +56,8 @@ namespace LinkImager.Droid
         }
     }
     [Activity]
-    [IntentFilter(new string[] { "android.intent.action.VIEW" }, Categories = new string[] { "android.intent.category.DEFAULT", "android.intent.category.BROWSABLE" }, DataHost = "*", DataMimeType = "*/*", DataScheme = "file", DataPathPattern = ".*\\\\.ii")]
+    // [IntentFilter(new string[] { "android.intent.action.VIEW", "android.intent.action.VIEW"}, Categories = new string[] { "android.intent.category.DEFAULT", "android.intent.category.BROWSABLE" }, DataHost = "*", DataMimeTypes = new string[] { "*/*", "application/octet-stream", "application/ii", "text/*" }, DataSchemes = new string[] {"file", "content" }, DataPathPattern = ".*\\\\.ii")]
+    [IntentFilter(new[] { Intent.ActionView, Intent.ActionEdit, Intent.ActionSend }, Categories = new[] { Intent.CategoryDefault, Intent.CategoryBrowsable }, DataMimeType = "application/*", DataPathPattern = ".*\\\\ii")] // https://forums.xamarin.com/discussion/129880/intentfilter-on-android-is-not-working-for-my-file-type
     public class LaunchProjectActivity : Activity
     {
 
