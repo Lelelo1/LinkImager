@@ -88,18 +88,6 @@ namespace LinkImager
             }
             else
             {
-                // FileData fileData = await Plugin.FilePicker.CrossFilePicker.Current();
-                // string tempDir = Xamarin.Essentials.FileSystem.AppDataDirectory;
-                // string tempDir = System.IO.Path.GetTempPath();
-                /*
-                string tempDir = System.Environment.GetFolderPath(
-                    System.Environment.SpecialFolder.Personal);
-                tempDir = Path.Combine(tempDir, "Pictures");
-                */
-                /*
-                var x = Plugin.FileSystem.CrossFileSystem.Current.LocalStorage;
-                tempDir = x.FullName;
-                */
                 string tempDir = Xamarin.Essentials.FileSystem.CacheDirectory;
                 // Xamarin.Essentials.FileSystem.
                 // var appdata = Xamarin.Essentials.FileSystem.AppDataDirectory;
@@ -109,10 +97,9 @@ namespace LinkImager
 
                 if (!string.IsNullOrEmpty(name))
                 {
-                    if(MainPage.mediaUploadProccesses.Count >= 1)
-                    {
-                        await MainPage.mediaUploadProccesses[MainPage.mediaUploadProccesses.Count - 1];
-                    }
+                    // await Xamarin.Essentials.TextToSpeech.SpeakAsync("MUHUHAUHAUAHHHAAHHAHAHAHHAhahaha");
+                    await Task.WhenAll(MainPage.mediaUploadProccesses);
+
                     DESCryptoServiceProvider dESCrypto = new DESCryptoServiceProvider();
                     name += ".ii";
                     string fullPath = Path.Combine(tempDir, name);
@@ -201,6 +188,7 @@ namespace LinkImager
             MovableImage project = (MovableImage)formatter.Deserialize(cryptoStream);
             cryptoStream.Close();
             stream.Close();
+
             return project;
         }
     }

@@ -83,6 +83,7 @@ namespace LinkImager
         }
         public async Task<bool> DeleteFileFromStorage(string url)
         {
+
             CloudBlockBlob blockBlob = container.GetBlockBlobReference(Path.GetFileName(new Uri(url).LocalPath));
             await blockBlob.DeleteAsync();
             return await blockBlob.ExistsAsync();

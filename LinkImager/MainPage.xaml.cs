@@ -149,20 +149,26 @@ namespace LinkImager
             Display(nowLinkImage);
             // condition here
             string applicationKey = await App.GetApplicationKey();
-            if(applicationKey == movableImage.appKey)
+            // Delete from cloud only if is author
+            if (applicationKey == movableImage.appKey)
             {
                 if(movableImage.ImageUrl != StatusImages.ImageDeleted)
                 {
-                    // Delete from cloud only if is author
+                    /*
                     if (mediaUploadProccesses.Count >= 1)
                     {
                         Task<string> mediaUploadProccess = mediaUploadProccesses[mediaUploadProccesses.Count - 1];
                         url = await mediaUploadProccess;
                     }
+                    */
 
+                    // Task.WaitAll(mediaUploadProccesses.ToArray()); // https://stackoverflow.com/questions/19766535/task-waitall-not-working-as-expected
+                    await Task.WhenAll(mediaUploadProccesses);
+                    url = nowLinkImage.ImageUrl;
                     Azure azure = new Azure();
                     await azure.DeleteFileFromStorage(url);
                     await CachedImage.InvalidateCache(url, FFImageLoading.Cache.CacheType.All); // removing local cached image as well - otherwise stored for 1 day
+
                 }
             }
             else
@@ -226,24 +232,30 @@ namespace LinkImager
 
                         nowLinkImage.imageMediaPath = mediaFile.Path; // works faster. Whatch out but rasies the specified blob does not exist when delete. 
                         Display(nowLinkImage);
-                        Task<string> mediaUploadTask = MediaUpload(mediaFile);
-                        mediaUploadProccesses.Add(mediaUploadTask);
-                        await mediaUploadTask;
-                        mediaUploadProccesses.Remove(mediaUploadTask);
+
+                        Thread thread = new Thread(async() =>
+                        {
+                            Task<string> mediaUploadTask = MediaUploadAsync(mediaFile, nowLinkImage); // thread to increase loading time when sharing
+                            mediaUploadProccesses.Add(mediaUploadTask);
+                            await mediaUploadTask;
+                            mediaUploadProccesses.Remove(mediaUploadTask);
+                            return;
+                        });
+                        thread.Start();
                     }
                 }
 
             }
             // actionOrigin = null; // for solving android issue. Check if it does not hurt iOS. It don't
         }
-        private async Task<string> MediaUpload(MediaFile mediaFile)
+        public static async Task<string> MediaUploadAsync(MediaFile mediaFile, MovableImage movableImage)
         {
             Azure azure = new Azure();
-            nowLinkImage.ImageUrl = await azure.UploadFileToStorage(mediaFile); // is set here so when share image are truly set
+            movableImage.ImageUrl = await azure.UploadFileToStorage(mediaFile); // is set here so when share image are truly set
 
             return nowLinkImage.ImageUrl;
         }
-        async void Absolute_DoubleTapped(object sender, TapEventArgs e)
+        void Absolute_DoubleTapped(object sender, TapEventArgs e)
         {
             if(nowLinkImage.ImageUrl != standardImageName && nowLinkImage.owner == null)
             {
@@ -305,10 +317,18 @@ namespace LinkImager
                             MediaFile mediaFile = await Actions.PickPhoto();
                             if(mediaFile != null)
                             {
-                                Azure azure = new Azure();
-                                string url = await azure.UploadFileToStorage(mediaFile);
-                                nowLinkImage.ImageUrl = url;
+                                nowLinkImage.imageMediaPath = mediaFile.Path;
                                 Display(nowLinkImage);
+                                Thread thread = new Thread(async () =>
+                                {
+                                    Task<string> mediaUploadTask = MediaUploadAsync(mediaFile, nowLinkImage); // thread to increase loading time when sharing
+                                    mediaUploadProccesses.Add(mediaUploadTask);
+                                    await mediaUploadTask;
+                                    mediaUploadProccesses.Remove(mediaUploadTask);
+                                    return;
+                                });
+                                thread.Start();
+
                             }
                         }
                     }
@@ -371,25 +391,39 @@ namespace LinkImager
             BoundsAwaiter.SetResult(((CachedImage)s).Bounds);
 
         };
+        private static EventHandler<CachedImageEvents.ErrorEventArgs> Handle_Error = (s, e) =>
+        {
+            if(e.Exception is FFImageLoading.DownloadAggregateException)
+            {
+                d.ImageUrl = StatusImages.ImageDeleted;
+                WaitForBoundsAsync(c, d);
+            }
+            // handle exception here when ImageDeleted
+        };
+        private static CachedImage c;
+        private static MovableImage d;
         public static async Task<Task<Rectangle>> WaitForBoundsAsync(CachedImage cachedImage, MovableImage displayLinkImage)
         {
+            c = cachedImage;
+            d = displayLinkImage;
             // unregister so that eventhandlers doesn't stack up
             cachedImage.Success -= Handle_Success;
+            cachedImage.Error -= Handle_Error;
             BoundsAwaiter = new TaskCompletionSource<Rectangle>();
             cachedImage.Success += Handle_Success;
+            cachedImage.Error += Handle_Error;
 
             try
             {
-                string url = await displayLinkImage.GetImageUrlAsync();
-
-                cachedImage.Source = url;
+                cachedImage.Source = displayLinkImage.ImageUrl;
             }
             catch(Exception ex)
             {
+                var exc = ex;
 
-                cachedImage.Source = FileImageSource.FromFile(displayLinkImage.ImageUrl);
             }
-            
+
+
             return BoundsAwaiter.Task;
         }
     }

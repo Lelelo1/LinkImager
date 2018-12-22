@@ -27,7 +27,7 @@ namespace LinkImager.Items
             }
             set
             {
-                // new Thread(() => SetImageUrl(value)).Start(); // very fast on ios! slow on my api23 android phone. Is only made on deserialization now
+
                 SetImageUrl(value);
                 imageMediaPath = null;
                 // imageUrl = value;
@@ -57,7 +57,10 @@ namespace LinkImager.Items
                     imageUrl = StatusImages.ImageDeleted;
                     uriImageSource.Uri = new Uri(imageUrl);
                 }
+                uriImageSource.Uri = new Uri(imageUrl);
                 this.Source = uriImageSource; // ensuring image is truly downloaded. all movableImages propely displayed.
+                FFImageLoading.Forms.CachedImage cachedImage = new FFImageLoading.Forms.CachedImage() { Source = imageUrl};
+
                 isVisible(AppBar.showState);
 
             }
@@ -281,16 +284,15 @@ namespace LinkImager.Items
                 {
                     imageMediaPath = mediaFile.Path;
                     isVisible(ShowState.IsHidden);
-                    Azure azure = new Azure();
-                    Task<string> mediaUploadProccess = azure.UploadFileToStorage(mediaFile);
-                    MainPage.mediaUploadProccesses.Add(mediaUploadProccess);
-                    new Thread(async() =>
+                    Thread thread = new Thread(async () =>
                     {
-                        string url = await mediaUploadProccess;
-                        MainPage.mediaUploadProccesses.Remove(mediaUploadProccess); // might not increase preformence
-                        ImageUrl = url;
-                    }).Start();
-
+                        Task<string> mediaUploadTask = MainPage.MediaUploadAsync(mediaFile, this);
+                        MainPage.mediaUploadProccesses.Add(mediaUploadTask);
+                        await mediaUploadTask;
+                        MainPage.mediaUploadProccesses.Remove(mediaUploadTask);
+                        return;
+                    });
+                    thread.Start();
                     // this.Source = ImageSource.FromUri(new Uri(url));
 
                 }
@@ -312,11 +314,18 @@ namespace LinkImager.Items
             MediaFile mediaFile = await Actions.PickPhoto();
             if(mediaFile != null)
             {
-                Azure azure = new Azure();
-                string url = await azure.UploadFileToStorage(mediaFile);
-                ImageUrl = url;
-                this.Source = uriImageSource;
+                imageMediaPath = mediaFile.Path;
                 isVisible(ShowState.IsHidden);
+                Thread thread = new Thread(async () =>
+                {
+                    Task<string> mediaUploadTask = MainPage.MediaUploadAsync(mediaFile, this);
+                    MainPage.mediaUploadProccesses.Add(mediaUploadTask);
+                    await mediaUploadTask;
+                    MainPage.mediaUploadProccesses.Remove(mediaUploadTask);
+                    return;
+                });
+                thread.Start();
+
             }
             // MainPage.actionOrigin = null;
             MainPage.mainPage.AssignGestures();
@@ -395,16 +404,18 @@ namespace LinkImager.Items
                 this.Opacity = 0;
                 MainPage.absolute.Children.Remove(this);
                 string applicationKey = await App.GetApplicationKey();
-                if(applicationKey == this.appKey)
+                // if is author
+                if (applicationKey == this.appKey)
                 {
-
+                    /*
                     if (MainPage.mediaUploadProccesses.Count >= 1)
                     {
                         await MainPage.mediaUploadProccesses[MainPage.mediaUploadProccesses.Count - 1];
-                    }
-                    // if is author
+                    }*/
+                    await Task.WhenAll(MainPage.mediaUploadProccesses);
+
                     Azure azure = new Azure();
-                    await azure.DeleteFileFromStorage(this.imageUrl);
+                    await azure.DeleteFileFromStorage(this.ImageUrl);
                 }
                 else
                 {

@@ -51,12 +51,11 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
     <MtouchArch>ARMv7, ARMv7s, ARM64</MtouchArch>
-    <CodesignKey>iPhone Distribution: Leo Wetterek (6ZVEHK4GJ7)</CodesignKey>
+    <CodesignKey>iPhone Developer: Leo Wetterek (TD8Y89THZ3)</CodesignKey>
     <MtouchDebug>true</MtouchDebug>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
-    <DeviceSpecificBuild>false</DeviceSpecificBuild>
-    <CodesignProvision>LinkImagerProvisioningProfile</CodesignProvision>
-    <BuildIpa>true</BuildIpa>
+    <DeviceSpecificBuild>true</DeviceSpecificBuild>
+    <CodesignProvision>iOS Team Provisioning Profile: oel.kerettew.LinkImager</CodesignProvision>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <DebugType>none</DebugType>
