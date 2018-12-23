@@ -284,13 +284,16 @@ namespace LinkImager.Items
                 {
                     imageMediaPath = mediaFile.Path;
                     isVisible(ShowState.IsHidden);
-                    Thread thread = new Thread(async () =>
+                    Thread thread = new Thread(() =>
                     {
+                        /*
                         Task<string> mediaUploadTask = MainPage.MediaUploadAsync(mediaFile, this);
                         MainPage.mediaUploadProccesses.Add(mediaUploadTask);
                         await mediaUploadTask;
                         MainPage.mediaUploadProccesses.Remove(mediaUploadTask);
                         return;
+                        */
+                        MediaUpload(mediaFile);                       
                     });
                     thread.Start();
                     // this.Source = ImageSource.FromUri(new Uri(url));
@@ -316,13 +319,17 @@ namespace LinkImager.Items
             {
                 imageMediaPath = mediaFile.Path;
                 isVisible(ShowState.IsHidden);
-                Thread thread = new Thread(async () =>
+                Thread thread = new Thread(() =>
                 {
+
+                    /*
                     Task<string> mediaUploadTask = MainPage.MediaUploadAsync(mediaFile, this);
                     MainPage.mediaUploadProccesses.Add(mediaUploadTask);
                     await mediaUploadTask;
                     MainPage.mediaUploadProccesses.Remove(mediaUploadTask);
                     return;
+                    */
+                    MediaUpload(mediaFile);                  
                 });
                 thread.Start();
 
@@ -412,7 +419,11 @@ namespace LinkImager.Items
                     {
                         await MainPage.mediaUploadProccesses[MainPage.mediaUploadProccesses.Count - 1];
                     }*/
-                    await Task.WhenAll(MainPage.mediaUploadProccesses);
+                    // await Task.WhenAll(MainPage.mediaUploadProccesses);
+                    if(MediaUploadTask != null)
+                    {
+                        await MediaUploadTask;
+                    }
 
                     Azure azure = new Azure();
                     await azure.DeleteFileFromStorage(this.ImageUrl);
@@ -535,6 +546,21 @@ namespace LinkImager.Items
         {
             MainPage.absolute.Children.Remove(directChild);
             this.children.Remove(directChild);
+        }
+        public Task<string> MediaUploadTask;
+        public void MediaUpload(MediaFile mediaFile) // await MediaPuploadTask
+        {
+            MediaUploadTask = mediaUploadTask(mediaFile);
+        }
+        public static List<Task<string>> mediaUploadProccesses = new List<Task<string>>();
+        private async Task<string> mediaUploadTask(MediaFile mediaFile)
+        {
+            Azure azure = new Azure();
+            MediaUploadTask = azure.UploadFileToStorage(mediaFile);
+            mediaUploadProccesses.Add(MediaUploadTask);
+            ImageUrl = await MediaUploadTask;
+            mediaUploadProccesses.Remove(MediaUploadTask);
+            return ImageUrl;
         }
     }
 }

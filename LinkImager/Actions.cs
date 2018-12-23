@@ -98,7 +98,7 @@ namespace LinkImager
                 if (!string.IsNullOrEmpty(name))
                 {
                     // await Xamarin.Essentials.TextToSpeech.SpeakAsync("MUHUHAUHAUAHHHAAHHAHAHAHHAhahaha");
-                    await Task.WhenAll(MainPage.mediaUploadProccesses);
+                    await Task.WhenAll(MovableImage.mediaUploadProccesses);
 
                     DESCryptoServiceProvider dESCrypto = new DESCryptoServiceProvider();
                     name += ".ii";

@@ -63,7 +63,7 @@
 	<key>XSLaunchImageAssets</key>
 	<string>Assets.xcassets/LaunchImage.launchimage</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0.3</string>
+	<string>1.0.4</string>
 	<key>CFBundleName</key>
 	<string>LinkImager</string>
 	<key>NSCalendarsUsageDescription</key>

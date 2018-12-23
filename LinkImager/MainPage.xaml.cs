@@ -23,7 +23,7 @@ namespace LinkImager
         public static string standardImageName = "branch.jpg";
         public static string projectUrl;
         // private static Task<string> mediaUploadProccess; // unsynced ultiple of these arise proably
-        public static List<Task<string>> mediaUploadProccesses = new List<Task<string>>();
+        // public static List<Task<string>> mediaUploadProccesses = new List<Task<string>>();
         public MainPage()
         {
             InitializeComponent();
@@ -137,7 +137,7 @@ namespace LinkImager
 
             string url = movableImage.ImageUrl;
             nowLinkImage.ImageUrl = standardImageName;
-            if(movableImage.children.Count == 0 && movableImage.owner != null) // move one step back when deleting an end branch
+            if (movableImage.children.Count == 0 && movableImage.owner != null) // move one step back when deleting an end branch
             {
                 nowLinkImage = movableImage.owner;
                 nowLinkImage.Remove(movableImage);
@@ -152,7 +152,7 @@ namespace LinkImager
             // Delete from cloud only if is author
             if (applicationKey == movableImage.appKey)
             {
-                if(movableImage.ImageUrl != StatusImages.ImageDeleted)
+                if (movableImage.ImageUrl != StatusImages.ImageDeleted)
                 {
                     /*
                     if (mediaUploadProccesses.Count >= 1)
@@ -163,21 +163,30 @@ namespace LinkImager
                     */
 
                     // Task.WaitAll(mediaUploadProccesses.ToArray()); // https://stackoverflow.com/questions/19766535/task-waitall-not-working-as-expected
-                    await Task.WhenAll(mediaUploadProccesses);
-                    url = nowLinkImage.ImageUrl;
-                    Azure azure = new Azure();
-                    await azure.DeleteFileFromStorage(url);
-                    await CachedImage.InvalidateCache(url, FFImageLoading.Cache.CacheType.All); // removing local cached image as well - otherwise stored for 1 day
+                    try // if the url is mediaPath
+                    {
+                        Azure azure = new Azure();
+                        await azure.DeleteFileFromStorage(url);
+                        await CachedImage.InvalidateCache(url, FFImageLoading.Cache.CacheType.All);
+                    }
+                    catch(Exception ex)
+                    { // waiting for the url to be set
+                        if (nowLinkImage.MediaUploadTask != null)
+                        {
+                            Azure azure = new Azure();
+                            url = await nowLinkImage.MediaUploadTask;
+                            await azure.DeleteFileFromStorage(url);
+                            await CachedImage.InvalidateCache(url, FFImageLoading.Cache.CacheType.All);
+                        }
+                    }
 
                 }
+                else
+                {
+                    // await App.Current.MainPage.DisplayAlert("Not author", "Not author so image was not removed from cloud", "ok");
+                }
             }
-            else
-            {
-                // await App.Current.MainPage.DisplayAlert("Not author", "Not author so image was not removed from cloud", "ok");
-            }
-
         }
-
         public static MovableImage actionOrigin = null;
         public void AssignGestures()
         {
@@ -233,13 +242,9 @@ namespace LinkImager
                         nowLinkImage.imageMediaPath = mediaFile.Path; // works faster. Whatch out but rasies the specified blob does not exist when delete. 
                         Display(nowLinkImage);
 
-                        Thread thread = new Thread(async() =>
+                        Thread thread = new Thread(() =>
                         {
-                            Task<string> mediaUploadTask = MediaUploadAsync(mediaFile, nowLinkImage); // thread to increase loading time when sharing
-                            mediaUploadProccesses.Add(mediaUploadTask);
-                            await mediaUploadTask;
-                            mediaUploadProccesses.Remove(mediaUploadTask);
-                            return;
+                            nowLinkImage.MediaUpload(mediaFile);
                         });
                         thread.Start();
                     }
@@ -247,13 +252,6 @@ namespace LinkImager
 
             }
             // actionOrigin = null; // for solving android issue. Check if it does not hurt iOS. It don't
-        }
-        public static async Task<string> MediaUploadAsync(MediaFile mediaFile, MovableImage movableImage)
-        {
-            Azure azure = new Azure();
-            movableImage.ImageUrl = await azure.UploadFileToStorage(mediaFile); // is set here so when share image are truly set
-
-            return nowLinkImage.ImageUrl;
         }
         void Absolute_DoubleTapped(object sender, TapEventArgs e)
         {
@@ -319,13 +317,9 @@ namespace LinkImager
                             {
                                 nowLinkImage.imageMediaPath = mediaFile.Path;
                                 Display(nowLinkImage);
-                                Thread thread = new Thread(async () =>
+                                Thread thread = new Thread(() =>
                                 {
-                                    Task<string> mediaUploadTask = MediaUploadAsync(mediaFile, nowLinkImage); // thread to increase loading time when sharing
-                                    mediaUploadProccesses.Add(mediaUploadTask);
-                                    await mediaUploadTask;
-                                    mediaUploadProccesses.Remove(mediaUploadTask);
-                                    return;
+                                    nowLinkImage.MediaUpload(mediaFile);
                                 });
                                 thread.Start();
 
