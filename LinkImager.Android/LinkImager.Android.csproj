@@ -118,6 +118,8 @@
     <AndroidResource Include="Resources\drawable-xhdpi\ic_launcher.png" />
     <AndroidResource Include="Resources\drawable-xxhdpi\ic_launcher.png" />
     <AndroidResource Include="Resources\drawable-xxxhdpi\ic_launcher.png" />
+    <AndroidResource Include="Resources\drawable\standardImage.png" />
+    <AndroidResource Include="Resources\drawable\Example.ii" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\drawable\" />

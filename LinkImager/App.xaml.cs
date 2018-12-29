@@ -3,7 +3,7 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using Plugin.Settings;
 using System.Threading.Tasks;
-
+using Plugin.Settings.Abstractions;
 [assembly: XamlCompilation(XamlCompilationOptions.Compile)]
 namespace LinkImager
 {
@@ -17,16 +17,14 @@ namespace LinkImager
             if(applicationKey == null)
             {
                 // string appkey = Preferences.Get("appKey", null);
-                string applicationkey = CrossSettings.Current.GetValueOrDefault("appKey", null);
+                string applicationkey = FreshMvvm.FreshIOC.Container.Resolve<ISettings>().GetValueOrDefault("appKey", null);
 
                 if(applicationkey == null)
                 {
                     Azure azure = new Azure();
                     applicationkey = await azure.GenerateAppKey();
-
-                    azure.UploadMediaReference(applicationkey, "key");
                     // Preferences.Set("appKey", appKey);
-                    CrossSettings.Current.AddOrUpdateValue("appKey", applicationkey);
+                    FreshMvvm.FreshIOC.Container.Resolve<ISettings>().AddOrUpdateValue("appKey", applicationkey);
                 }
                 applicationKey = applicationkey;
             }
@@ -36,16 +34,31 @@ namespace LinkImager
         public App()
         {
             InitializeComponent();
-            MainPage = new AppBar(new MainPage());
+            IoCSetUp();
+            if (null == FreshMvvm.FreshIOC.Container.Resolve<ISettings>().GetValueOrDefault("initialized", null)) // showing a example project if i'ts the first startup
+            {
+                MainPage = new AppBar(new MainPage("Example.ii"));
+                FreshMvvm.FreshIOC.Container.Resolve<ISettings>().AddOrUpdateValue("initialized", "yes");
+            }
+            else
+            {
+                MainPage = new AppBar(new MainPage());
+            }
+
         }
         public App(string projectUrl)
         {
             // check if image - then launch with first image as the image
             InitializeComponent();
+            IoCSetUp();
             MainPage = new AppBar(new MainPage(projectUrl));
         }
         // launch when appliation is still running - wditing the selected image in
         // project
+        private void IoCSetUp()
+        {
+            FreshMvvm.FreshIOC.Container.Register<Plugin.Settings.Abstractions.ISettings>(Plugin.Settings.CrossSettings.Current);
+        }
         public static void LaunchWithImage(string url)
         {
 

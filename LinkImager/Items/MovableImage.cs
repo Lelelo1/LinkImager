@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MR.Gestures;
 using Plugin.Media.Abstractions;
+using Plugin.Settings.Abstractions;
 using Xamarin.Forms;
 namespace LinkImager.Items
 {
@@ -445,7 +446,8 @@ namespace LinkImager.Items
         // other methods
         private async void SetAppKey()
         {
-           appKey =  await App.GetApplicationKey();
+           appKey =  await App.GetApplicationKey(
+           );
         }
         public void isVisible(ShowState showState)
         {

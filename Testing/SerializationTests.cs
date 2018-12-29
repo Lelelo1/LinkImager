@@ -9,7 +9,7 @@ namespace Testing
     [TestClass]
     public class SerializationTests
     {
-
+        /*
         [TestMethod]
         public void Serialize()
         {
@@ -40,5 +40,6 @@ namespace Testing
 
             Assert.IsNotNull(project);
         }
+        */
     }
 }

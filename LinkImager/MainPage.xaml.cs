@@ -10,7 +10,7 @@ using MR.Gestures;
 using Xamarin.Forms;
 using FFImageLoading.Forms;
 using FFImageLoading.Work;
-
+using Plugin.Settings;
 namespace LinkImager
 {
     public partial class MainPage : Xamarin.Forms.ContentPage
@@ -20,7 +20,7 @@ namespace LinkImager
         public static MR.Gestures.AbsoluteLayout absolute;
         public static MovableImage nowLinkImage;
         public static CachedImage backgroundImage;
-        public static string standardImageName = "branch.jpg";
+        public static string standardImageName = "standardImage.png";
         public static string projectUrl;
         // private static Task<string> mediaUploadProccess; // unsynced ultiple of these arise proably
         // public static List<Task<string>> mediaUploadProccesses = new List<Task<string>>();
@@ -387,7 +387,7 @@ namespace LinkImager
         };
         private static EventHandler<CachedImageEvents.ErrorEventArgs> Handle_Error = (s, e) =>
         {
-            if(e.Exception is FFImageLoading.DownloadAggregateException)
+            if(e.Exception is FFImageLoading.DownloadAggregateException) // FFImageLoading.DownloadAggregateException thrown when displaying an image of which url is deleted. Even though it exists in cache
             {
                 d.ImageUrl = StatusImages.ImageDeleted;
                 WaitForBoundsAsync(c, d);

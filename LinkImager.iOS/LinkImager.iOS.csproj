@@ -164,5 +164,7 @@
     <BundleResource Include="Resources\showfilled.png" />
     <BundleResource Include="Resources\showfilled%402x.png" />
     <BundleResource Include="Resources\showfilled%403x.png" />
+    <BundleResource Include="Resources\standardImage.png" />
+    <BundleResource Include="Resources\Example.ii" />
   </ItemGroup>
 </Project>

@@ -11,6 +11,8 @@ using System.Text;
 using Microsoft.WindowsAzure.MobileServices;
 using LinkImager.Model;
 using Microsoft.WindowsAzure.MobileServices.Sync;
+using FreshMvvm;
+using Plugin.Settings.Abstractions;
 
 namespace LinkImager
 {

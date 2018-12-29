@@ -10,8 +10,8 @@ namespace LinkImager
             // wait in this proc, until user did his input 
             var tcs = new TaskCompletionSource<string>();
 
-            var lblTitle = new Label { Text = "Title", HorizontalOptions = LayoutOptions.Center, FontAttributes = FontAttributes.Bold };
-            var lblMessage = new Label { Text = "Enter new text:" };
+            var lblTitle = new Label { Text = "Project", HorizontalOptions = LayoutOptions.Center, FontAttributes = FontAttributes.Bold };
+            var lblMessage = new Label { Text = "Enter name of project:" };
             var txtInput = new Entry { Text = "" };
 
             var btnOk = new Button
