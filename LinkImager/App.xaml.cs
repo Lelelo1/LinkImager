@@ -18,7 +18,6 @@ namespace LinkImager
             {
                 // string appkey = Preferences.Get("appKey", null);
                 string applicationkey = FreshMvvm.FreshIOC.Container.Resolve<ISettings>().GetValueOrDefault("appKey", null);
-
                 if(applicationkey == null)
                 {
                     Azure azure = new Azure();
@@ -44,6 +43,7 @@ namespace LinkImager
             {
                 MainPage = new AppBar(new MainPage());
             }
+           
 
         }
         public App(string projectUrl)

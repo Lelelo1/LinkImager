@@ -19,27 +19,12 @@ namespace Testing
         [TestMethod]
         public async Task CanUploadImage()
         {
-            try 
-            {
-                // var m = new Mock<ISettings>();
-                // await App.GetApplicationKey(m.Object);
-                // var m = new Mock(Plugin.Settings.CrossSettings.Current);
-                
 
-
-            }
-            catch(Exception ex )
-            {
-                /*
-                 *    at Plugin.Settings.CrossSettings.get_Current()\n   at LinkImager.App.GetApplicationKey() in /Users/hemma/Projects/LinkImager/LinkImager/App.xaml.cs:line 20\n   at LinkImager.Azure.UploadFileToStorage(MediaFile mediaFile) in /Users/hemma/Projects/LinkImager/LinkImager/Azure.cs:line 67\n   at Testing.AzureTests.CanUploadImage() in /Users/hemma/Projects/LinkImager/Testing/AzureTests.cs:line 24               
-                 */
-            }
             FreshMvvm.FreshIOC.Container.Register<ISettings>(new Mock<Plugin.Settings.Abstractions.ISettings>().Object);
             string testImagePath = "/Users/hemma/Projects/LinkImager/Testing/ImageFromCamera/temp.jpg";
             Azure azure = new Azure();
             url = await azure.UploadFileToStorage(new Plugin.Media.Abstractions.MediaFile(testImagePath, () => GetStream(testImagePath)));
             System.Diagnostics.Debug.WriteLine(url);
-
             Assert.IsTrue(new Uri((url)).IsAbsoluteUri);
 
         }

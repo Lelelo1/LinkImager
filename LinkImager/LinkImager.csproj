@@ -39,8 +39,10 @@
     <Compile Remove="AppBar.cs" />
     <Compile Remove="MovableImageExtension.cs" />
     <Compile Remove="CreateBackButton.xaml.cs" />
+    <Compile Remove="Items\Enum.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Items\ShowState.config" />
+    <None Remove="Items\MovableIcon.xml" />
   </ItemGroup>
 </Project>

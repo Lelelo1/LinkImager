@@ -6,6 +6,8 @@ using System.Net.Http;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using FFImageLoading;
+using FFImageLoading.Work;
 using MR.Gestures;
 using Plugin.Media.Abstractions;
 using Plugin.Settings.Abstractions;
@@ -61,7 +63,18 @@ namespace LinkImager.Items
                 uriImageSource.Uri = new Uri(imageUrl);
                 this.Source = uriImageSource; // ensuring image is truly downloaded. all movableImages propely displayed.
                 FFImageLoading.Forms.CachedImage cachedImage = new FFImageLoading.Forms.CachedImage() { Source = imageUrl};
+                /*
+                try
+                {
+                    // ImageService.Instance.LoadUrl(imageUrl).DownSample().BitmapOptimizations(true).WithCache(FFImageLoading.Cache.CacheType.All).
+                    ImageService.Instance.LoadUrl(imageUrl).WithCache(FFImageLoading.Cache.CacheType.All).Preload();
+                    MainPage.backgroundImage.
+                }
+                catch(Exception ex)
+                {
 
+                }
+                */               
                 isVisible(AppBar.showState);
 
             }
@@ -155,7 +168,7 @@ namespace LinkImager.Items
             SetAppKey();
             MainPage.absolute = absolute;
             this.owner = owner;
-            this.Source = ImageSource.FromFile("camera.png");
+            this.Source = Xamarin.Forms.ImageSource.FromFile("camera.png");
             Rectangle = rectangle;
             AssignEventHandlersWhenVisible();
         }
@@ -227,21 +240,12 @@ namespace LinkImager.Items
             // MainPage.actionOrigin = null;
             // MainPage.mainPage.AssignGestures(); // this and downiOS occur both on android
         }
-        
-        void Handle_DowniOS(object sender, DownUpEventArgs e)
+
+        protected virtual void Handle_DowniOS(object sender, DownUpEventArgs e)
         {
-
-            // MainPage.actionOrigin = this;
             MainPage.mainPage.DeAssignGestures();
-             // For weird android. down prevents tapped from being called
-            /*
-            if(Device.RuntimePlatform == Device.Android)
-            {
-                Handle_TappedWhenInVisible(sender, null);
-            }
-            */
         }
-
+        
         // dragging is listened for on absolute when down on this
         void Handle_Down(object sender, DownUpEventArgs e)
         {
@@ -456,13 +460,13 @@ namespace LinkImager.Items
                 this.Opacity = 1;
                 if(ImageUrl == null)
                 {
-                    this.Source = ImageSource.FromFile("camera.png");
+                    this.Source = Xamarin.Forms.ImageSource.FromFile("camera.png");
                 }
                 else
                 {
-                    if(imageMediaPath != null || imageUrl == "branch.jpg")
+                    if(imageMediaPath != null || imageUrl == MainPage.standardImageName)
                     {
-                        this.Source = ImageSource.FromFile(ImageUrl);
+                        this.Source = Xamarin.Forms.ImageSource.FromFile(ImageUrl);
                     }
                     else
                     {
@@ -476,13 +480,13 @@ namespace LinkImager.Items
             {
                 if (ImageUrl == null)
                 {
-                    this.Source = ImageSource.FromFile("camera.png");
+                    this.Source = Xamarin.Forms.ImageSource.FromFile("camera.png"); // check selected LinkType, image, audio video
                 }
                 else
                 {
-                    if (imageMediaPath != null || imageUrl == "branch.jpg")
+                    if (imageMediaPath != null || imageUrl == MainPage.standardImageName)
                     {
-                        this.Source = ImageSource.FromFile(ImageUrl);
+                        this.Source = Xamarin.Forms.ImageSource.FromFile(ImageUrl);
                     }
                     else
                     {
@@ -495,11 +499,48 @@ namespace LinkImager.Items
             else if(showState == ShowState.IsHidden)
             {
 
-                this.Source = ImageSource.FromFile("transparent.png");
+                this.Source = Xamarin.Forms.ImageSource.FromFile("transparent.png");
                 this.Opacity = 1;
                 AssignEventHandlersWhenInVisible();
             }
              
+        }
+
+        public void isLinkType(LinkType linkTo)
+        {
+            if(LinkType.Image == linkTo)
+            {
+                if (this.Source == Xamarin.Forms.ImageSource.FromFile("camera.png"))
+                {
+
+                }
+                else if(this.Source == Xamarin.Forms.ImageSource.FromFile("audio.png") || this.Source == Xamarin.Forms.ImageSource.FromFile("video.png"))
+                {
+                    this.Source = Xamarin.Forms.ImageSource.FromFile("camera.png");
+                }
+            }
+            else if(LinkType.Sound == linkTo)
+            {
+                if(this.Source == Xamarin.Forms.ImageSource.FromFile("audio.png"))
+                {
+
+                }
+                else if(this.Source == Xamarin.Forms.ImageSource.FromFile("camera.png") || this.Source == Xamarin.Forms.ImageSource.FromFile("video.png"))
+                {
+                    this.Source = Xamarin.Forms.ImageSource.FromFile("audio.png");
+                }
+            }
+            else if(LinkType.Video == linkTo)
+            {
+                if(this.Source == Xamarin.Forms.ImageSource.FromFile("video.png"))
+                {
+
+                }
+                else if(this.Source == Xamarin.Forms.ImageSource.FromFile("camera.png") || this.Source == Xamarin.Forms.ImageSource.FromFile("audio.png"))
+                {
+                    this.Source = Xamarin.Forms.ImageSource.FromFile("video.png");
+                }
+            }
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -550,7 +591,7 @@ namespace LinkImager.Items
             this.children.Remove(directChild);
         }
         public Task<string> MediaUploadTask;
-        public void MediaUpload(MediaFile mediaFile) // await MediaPuploadTask
+        public void MediaUpload(MediaFile mediaFile) // await MediaUploadTask
         {
             MediaUploadTask = mediaUploadTask(mediaFile);
         }
