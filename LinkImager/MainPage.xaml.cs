@@ -132,6 +132,7 @@ namespace LinkImager
                 Adjust(child, showState);
             }
         }
+        /*
         public static void ChangeLinkTypeTo(LinkType linkTo)
         {
             AdjustLinkType(nowLinkImage.GetProject(), linkTo);
@@ -142,9 +143,10 @@ namespace LinkImager
             // new Thread(() => movableImage.isVisible(showState)).Start(); causes uiKit error need to be called from ui thread
             foreach (MovableImage child in movableImage.children)
             {
-                AdjustLinkType(child, linkType);
+                AdjustLinkType(child, linkTo);
             }
         }
+        */
         public static async void Remove(MovableImage movableImage)
         {
 

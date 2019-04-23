@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Used to register the &quot;image&quot;, &quot;audio&quot; and &quot;video&quot; voice comand</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Needed to register the &quot;image&quot;, &quot;audio&quot;, &quot;video&quot; voice commands</string>
 	<key>UIDeviceFamily</key>
 	<array>
 		<integer>1</integer>

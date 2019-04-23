@@ -4,9 +4,12 @@ using LinkImager.Items;
 using Xamarin.Forms;
 using Plugin.ShareFile;
 using System.Threading.Tasks;
-
+using Plugin.Permissions;
+using Plugin.Permissions.Abstractions;
 namespace LinkImager
 {
+    // for text to speech
+    // https://medium.com/@dev.aritradas/xamarin-forms-speech-recognition-c16f07cdf164
     public partial class AppBar : NavigationPage
     {
         public AppBar(Page page) : base(page)
@@ -15,7 +18,10 @@ namespace LinkImager
             this.BarBackgroundColor = Color.Black;
             AppBar.SetHasBackButton(this, true);
             this.BarTextColor = Color.White;
+
+
         }
+
         public static ShowState showState = ShowState.IsHidden;
         void Handle_Hint(object sender, System.EventArgs e)
         {
@@ -70,5 +76,7 @@ namespace LinkImager
 
             // await App.Current.MainPage.DisplayAlert("info", "url is: " + MainPage.projectUrl, "ok");
         }
+        // public static LinkType currentLinkType = LinkType.Image; // used to determine creating area results in camera microphone or video
+
     }
 }
