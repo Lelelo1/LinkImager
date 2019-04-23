@@ -37,9 +37,9 @@ namespace LinkImager.Items
 
             }
         }
-
         private async void SetImageUrl(string value)
         {
+            Console.WriteLine("Setting image url: " + value);
             imageUrl = value;
             if (uriImageSource == null)
             {
@@ -561,7 +561,8 @@ namespace LinkImager.Items
             appKey = (string)info.GetValue("appKey", typeof(string));
             owner = (MovableImage)info.GetValue("owner", typeof(MovableImage));
             string url = (string)info.GetValue("imageUrl", typeof(string));
-
+            Console.WriteLine("Deserilizing");
+            imageUrl = url;
             new Thread(() => SetImageUrl(url)).Start();
             children = (List<MovableImage>)info.GetValue("children", typeof(List<MovableImage>));
             double x = (double)info.GetValue("x", typeof(double));

@@ -10,6 +10,7 @@ using MR.Gestures;
 using Xamarin.Forms;
 using FFImageLoading.Forms;
 using FFImageLoading.Work;
+using FFImageLoading;
 using Plugin.Settings;
 namespace LinkImager
 {
@@ -41,6 +42,7 @@ namespace LinkImager
             mainPage = this;
             // serialize
         }
+        private static List<String> ListOfImageUrls = null;
         public MainPage(string projectUrl)
         {
             
@@ -50,6 +52,24 @@ namespace LinkImager
             // if not load project data file
             absolute.BackgroundColor = Color.Transparent;
             nowLinkImage = Actions.ProjectFrom(projectUrl);
+
+            ListOfImageUrls = new List<string>();
+            SetListOfImageUrls(nowLinkImage);
+
+            // ImageService.Instance.InvalidateCacheAsync(FFImageLoading.Cache.CacheType.All); // when testing
+            foreach(string url in ListOfImageUrls)
+            {
+                try
+                {
+                    FFImageLoading.ImageService.Instance.LoadUrl(url).PreloadAsync().ContinueWith((obj) => {
+                        Console.WriteLine("finshed loading a image");
+                        // can display a blinking loading symbol
+                    });
+                } catch(Exception exception)
+                {
+                    Console.WriteLine(exception.Message + ". Occured when preloading the project's imageUrls");
+                }
+            }
 
             /*
             nowLinkImage = new MovableImage(standardImageName);
@@ -130,6 +150,14 @@ namespace LinkImager
             foreach(MovableImage child in movableImage.children)
             {
                 Adjust(child, showState);
+            }
+        }
+        private static void SetListOfImageUrls(MovableImage movableImage)
+        {
+            ListOfImageUrls.Add(movableImage.ImageUrl);
+            foreach(MovableImage child in movableImage.children)
+            {
+                SetListOfImageUrls(child);
             }
         }
         /*
