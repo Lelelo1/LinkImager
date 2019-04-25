@@ -15,7 +15,7 @@ using Xamarin.Forms;
 namespace LinkImager.Items
 {
     [Serializable()]
-	public class MovableImage : MR.Gestures.Image, ISerializable
+	public class MovableImage : ContainerMovableImage, ISerializable
     {
         public string appKey;
         public MovableImage owner;
@@ -41,40 +41,16 @@ namespace LinkImager.Items
         {
             Console.WriteLine("Setting image url: " + value);
             imageUrl = value;
-            if (uriImageSource == null)
-            {
-                uriImageSource = new UriImageSource();
-                uriImageSource.CachingEnabled = true;
-                uriImageSource.CacheValidity = new TimeSpan(1, 0, 0);
-            }
 
             try
             {
                 bool exists = await Azure.Exists(imageUrl);
-                if (exists)
-                {
-                    uriImageSource.Uri = new Uri(imageUrl);
-                }
-                else
+                if (!exists)
                 {
                     imageUrl = StatusImages.ImageDeleted;
-                    uriImageSource.Uri = new Uri(imageUrl);
                 }
                 uriImageSource.Uri = new Uri(imageUrl);
-                this.Source = uriImageSource; // ensuring image is truly downloaded. all movableImages propely displayed.
-                FFImageLoading.Forms.CachedImage cachedImage = new FFImageLoading.Forms.CachedImage() { Source = imageUrl};
-                /*
-                try
-                {
-                    // ImageService.Instance.LoadUrl(imageUrl).DownSample().BitmapOptimizations(true).WithCache(FFImageLoading.Cache.CacheType.All).
-                    ImageService.Instance.LoadUrl(imageUrl).WithCache(FFImageLoading.Cache.CacheType.All).Preload();
-                    MainPage.backgroundImage.
-                }
-                catch(Exception ex)
-                {
-
-                }
-                */               
+                this.GetCachedImage().Source = imageUrl;           
                 isVisible(AppBar.showState);
 
             }
@@ -168,7 +144,7 @@ namespace LinkImager.Items
             SetAppKey();
             MainPage.absolute = absolute;
             this.owner = owner;
-            this.Source = Xamarin.Forms.ImageSource.FromFile("camera.png");
+            this.GetCachedImage().Source = "camera.png";
             Rectangle = rectangle;
             AssignEventHandlersWhenVisible();
         }
@@ -460,19 +436,12 @@ namespace LinkImager.Items
                 this.Opacity = 1;
                 if(ImageUrl == null)
                 {
-                    this.Source = Xamarin.Forms.ImageSource.FromFile("camera.png");
+                    // this.Source = Xamarin.Forms.ImageSource.FromFile("camera.png");
+                    this.GetCachedImage().Source = "camera.png";
                 }
                 else
                 {
-                    if(imageMediaPath != null || imageUrl == MainPage.standardImageName)
-                    {
-                        this.Source = Xamarin.Forms.ImageSource.FromFile(ImageUrl);
-                    }
-                    else
-                    {
-                        this.Source = uriImageSource; // not displayed when 
-
-                    }
+                    this.GetCachedImage().Source = ImageUrl;
                 }
                 AssignEventHandlersWhenVisible();
             }
@@ -480,18 +449,11 @@ namespace LinkImager.Items
             {
                 if (ImageUrl == null)
                 {
-                    this.Source = Xamarin.Forms.ImageSource.FromFile("camera.png"); // check selected LinkType, image, audio video
+                    this.GetCachedImage().Source = "camera.png"; // check selected LinkType, image, audio video
                 }
                 else
                 {
-                    if (imageMediaPath != null || imageUrl == MainPage.standardImageName)
-                    {
-                        this.Source = Xamarin.Forms.ImageSource.FromFile(ImageUrl);
-                    }
-                    else
-                    {
-                        this.Source = uriImageSource;
-                    }
+                    this.GetCachedImage().Source = ImageUrl;
                 }
                 this.Opacity = 0.4;
                 AssignEventHandlersWhenInVisible();
@@ -499,13 +461,13 @@ namespace LinkImager.Items
             else if(showState == ShowState.IsHidden)
             {
 
-                this.Source = Xamarin.Forms.ImageSource.FromFile("transparent.png");
+                this.GetCachedImage().Source = "transparent.png";
                 this.Opacity = 1;
                 AssignEventHandlersWhenInVisible();
             }
              
         }
-
+        /*
         public void isLinkType(LinkType linkTo)
         {
             if(LinkType.Image == linkTo)
@@ -542,7 +504,7 @@ namespace LinkImager.Items
                 }
             }
         }
-
+        */
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue("appKey", appKey);
