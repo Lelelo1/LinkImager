@@ -391,7 +391,7 @@ namespace LinkImager.Items
                 // MainPage.actionOrigin = null;
                 this.Opacity = 0;
                 MainPage.absolute.Children.Remove(this);
-                string applicationKey = await App.GetApplicationKey();
+                string applicationKey = App.GetApplicationKey();
                 // if is author
                 if (applicationKey == this.appKey)
                 {
@@ -424,10 +424,9 @@ namespace LinkImager.Items
             MainPage.mainPage.AssignGestures();
         }
         // other methods
-        private async void SetAppKey()
+        private void SetAppKey()
         {
-           appKey =  await App.GetApplicationKey(
-           );
+           appKey = App.GetApplicationKey();
         }
         public void isVisible(ShowState showState)
         {

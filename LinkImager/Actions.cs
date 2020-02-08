@@ -77,11 +77,8 @@ namespace LinkImager
             }
             return null;
         }
-        static byte[] key = { 23, 120, 78, 3, 4, 138, 45, 16};
-        static byte[] iv = { 13, 34, 56, 4, 12, 89, 67, 62};
         public static async void Share(MovableImage project)
         {
-
             if (project.ImageUrl == null)// || movableImage.imageUrl == "branch.jpg"
             {
                 await App.Current.MainPage.DisplayAlert("Empty", "Build your project first before saving it or sending it", "ok");
@@ -104,7 +101,7 @@ namespace LinkImager
                     name += ".ii";
                     string fullPath = Path.Combine(tempDir, name);
                     Stream stream = File.Open(fullPath, FileMode.Create);
-                    var d = dESCrypto.CreateEncryptor(key, iv); // can only use DES and 8 bytes for key and iv: https://stackoverflow.com/questions/53816508/system-security-cryptpgraphicunexpectedoperationexception-when-creating-icryptot
+                    var d = dESCrypto.CreateEncryptor(Secret.Secrets.LinkImager.Encryption.KEY, Secret.Secrets.LinkImager.Encryption.IV); // can only use DES and 8 bytes for key and iv: https://stackoverflow.com/questions/53816508/system-security-cryptpgraphicunexpectedoperationexception-when-creating-icryptot
                     CryptoStream cryptoStream = new CryptoStream(stream, d, CryptoStreamMode.Write);
                     BinaryFormatter formatter = new BinaryFormatter();
 
@@ -164,13 +161,12 @@ namespace LinkImager
                     }
                     else
                     {
-                        await DependencyService.Get<IShare>().Show("", "", fullPath);
+                        Device.BeginInvokeOnMainThread(() =>
+                        {
+                            DependencyService.Get<IShare>().Show("", "", fullPath);
+                        });
                     }
-
-
                 }
-
-
             }
         }
         public static MovableImage ProjectFrom(string path)

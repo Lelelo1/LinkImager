@@ -1,7 +1,5 @@
 ﻿using System;
-using Microsoft.WindowsAzure.Storage.Auth;
-using Microsoft.WindowsAzure.Storage.Blob;
-using Microsoft.WindowsAzure.Storage;
+
 using System.Threading.Tasks;
 using System.IO;
 using System.Collections.Generic;
@@ -9,25 +7,21 @@ using Plugin.Media.Abstractions;
 using System.Linq;
 using System.Text;
 using Microsoft.WindowsAzure.MobileServices;
+using Microsoft.Azure.Storage;
 using LinkImager.Model;
-using Microsoft.WindowsAzure.MobileServices.Sync;
-using FreshMvvm;
-using Plugin.Settings.Abstractions;
-
+using Microsoft.Azure.Storage.Auth;
+using Microsoft.Azure.Storage.Blob;
 namespace LinkImager
 {
     // handles uploading images to cloud
-
-
     public class Azure
     {
         // https://portal.azure.com/#@LeoWsehotmail.onmicrosoft.com/resource/subscriptions/3d0f6e68-d4c0-428b-b0f6-f4f869d6e86f/resourceGroups/LinkImager/providers/Microsoft.Storage/storageAccounts/linkimagerstorageaccount/keys
         private static string storageAccountName = "linkimagerstorageaccount";
-        private static string storageKey1 = "puQEUrYllHVatpZsIdyqiDy1B9TLXBOMFZMU8/W5w/W5wH0UvI6AxYkei30y8X7lEzC6aFG/a6mUdue4rrrmCg==";
-        private static string containerName = "images";
+        private static string storageKey1 = Secret.Secrets.LinkImager.AZURE_STORAGE_KEY;
 
-        private CloudBlobContainer container;
-
+        private CloudBlobContainer imageContainer;
+        private CloudBlobContainer usersContainer;
         private static MobileServiceClient mobileServiceClient = new MobileServiceClient("https://linkimager.azurewebsites.net");
         public Azure()
         {
@@ -36,12 +30,12 @@ namespace LinkImager
             // Create cloudstorage account by passing the storagecredentials
             CloudStorageAccount storageAccount = new CloudStorageAccount(storageCredentials, true);
 
-            // Create the blob client.
             CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
 
             // Get reference to the blob container by passing the name by reading the value from the configuration (appsettings.json)
-            container = blobClient.GetContainerReference(containerName);
-
+            imageContainer = blobClient.GetContainerReference("images");
+            usersContainer = blobClient.GetContainerReference("users");
+           
         }
 
         public async Task<string> UploadFileToStorage(MediaFile mediaFile)
@@ -53,7 +47,7 @@ namespace LinkImager
             {
                 string fileName = RandomString(20);
                 fileName += ".jpg";
-                blockBlob = container.GetBlockBlobReference(fileName);
+                blockBlob = imageContainer.GetBlockBlobReference(fileName);
                 bool existed = await blockBlob.ExistsAsync();
                 if (!existed)
                 {
@@ -66,7 +60,7 @@ namespace LinkImager
 
             await blockBlob.UploadFromStreamAsync(mediaFile.GetStreamWithImageRotatedForExternalStorage());
             string url = blockBlob.Uri.ToString();
-            string appKey = await App.GetApplicationKey();
+            string appKey = App.GetApplicationKey();
             UploadMediaReference(appKey, url);
             return url;
         }
@@ -86,30 +80,44 @@ namespace LinkImager
         public async Task<bool> DeleteFileFromStorage(string url)
         {
 
-            CloudBlockBlob blockBlob = container.GetBlockBlobReference(Path.GetFileName(new Uri(url).LocalPath));
+            CloudBlockBlob blockBlob = imageContainer.GetBlockBlobReference(Path.GetFileName(new Uri(url).LocalPath));
             await blockBlob.DeleteAsync();
             return await blockBlob.ExistsAsync();
         }
-
-        public async void UploadMediaReference(string appKey, string url)
+        List<Media> MediaUploads() // media uploads
         {
-            await mobileServiceClient.GetTable<Media>().InsertAsync(new Media(appKey, url));
+            var text = usersContainer.GetBlockBlobReference("Medias.json").DownloadText();
+            // Ôªø added when downloadtext: https://stackoverflow.com/questions/39861943/cloudblockblob-downloadtextasync-returns-invalid-text
+            var startIndex = 0;
+            while (char.GetUnicodeCategory(text, startIndex) == System.Globalization.UnicodeCategory.Format)
+            {
+                startIndex++;
+            }
+            var json = text.Substring(startIndex, text.Length - startIndex);
+            var medias = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Media>>(json);
+            return medias;
+        }
+        public void UploadMediaReference(string appKey, string url)
+        {
+            var medias = MediaUploads();
+            medias.Add(new Media(appKey, url));
+            var newJson = Newtonsoft.Json.JsonConvert.SerializeObject(medias);
+            usersContainer.GetBlockBlobReference("Medias.json").UploadText(newJson);
         }
            
-        public async Task<string> GenerateAppKey()
+        public string GenerateAppKey()
         {
+            var medias = MediaUploads();
             bool findUniqueName = true;
             string appKey = null;
             while (findUniqueName)
             {
                 appKey = RandomString(20);
-
-                bool existed = (await mobileServiceClient.GetTable<Media>().ReadAsync()).Any<Media>(m => m.ApplicationKey == appKey);
+                bool existed = medias.Any(m => m.ApplicationKey == appKey);
 
                 if (!existed)
                 {
                     findUniqueName = false;
-
                 }
             }
             return appKey;

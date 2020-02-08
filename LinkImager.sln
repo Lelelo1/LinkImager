@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkImager", "LinkImager\Li
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Testing\Tests.csproj", "{684DC51A-F7D2-4509-8FF5-02D19C1847C0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkImager.Mac", "LinkImager.Mac\LinkImager.Mac.csproj", "{36E0FAA5-9EFD-41D8-A4AB-9035F932CE71}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,22 +85,6 @@ Global
 		{684DC51A-F7D2-4509-8FF5-02D19C1847C0}.Ad-Hoc|iPhone.Build.0 = Debug|Any CPU
 		{684DC51A-F7D2-4509-8FF5-02D19C1847C0}.AppStore|iPhone.ActiveCfg = Debug|Any CPU
 		{684DC51A-F7D2-4509-8FF5-02D19C1847C0}.AppStore|iPhone.Build.0 = Debug|Any CPU
-		{36E0FAA5-9EFD-41D8-A4AB-9035F932CE71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{36E0FAA5-9EFD-41D8-A4AB-9035F932CE71}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{36E0FAA5-9EFD-41D8-A4AB-9035F932CE71}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{36E0FAA5-9EFD-41D8-A4AB-9035F932CE71}.Release|Any CPU.Build.0 = Release|Any CPU
-		{36E0FAA5-9EFD-41D8-A4AB-9035F932CE71}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
-		{36E0FAA5-9EFD-41D8-A4AB-9035F932CE71}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
-		{36E0FAA5-9EFD-41D8-A4AB-9035F932CE71}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
-		{36E0FAA5-9EFD-41D8-A4AB-9035F932CE71}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
-		{36E0FAA5-9EFD-41D8-A4AB-9035F932CE71}.Debug|iPhone.ActiveCfg = Debug|Any CPU
-		{36E0FAA5-9EFD-41D8-A4AB-9035F932CE71}.Debug|iPhone.Build.0 = Debug|Any CPU
-		{36E0FAA5-9EFD-41D8-A4AB-9035F932CE71}.Release|iPhone.ActiveCfg = Release|Any CPU
-		{36E0FAA5-9EFD-41D8-A4AB-9035F932CE71}.Release|iPhone.Build.0 = Release|Any CPU
-		{36E0FAA5-9EFD-41D8-A4AB-9035F932CE71}.Ad-Hoc|iPhone.ActiveCfg = Debug|Any CPU
-		{36E0FAA5-9EFD-41D8-A4AB-9035F932CE71}.Ad-Hoc|iPhone.Build.0 = Debug|Any CPU
-		{36E0FAA5-9EFD-41D8-A4AB-9035F932CE71}.AppStore|iPhone.ActiveCfg = Debug|Any CPU
-		{36E0FAA5-9EFD-41D8-A4AB-9035F932CE71}.AppStore|iPhone.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0

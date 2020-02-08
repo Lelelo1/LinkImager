@@ -12,7 +12,7 @@ namespace LinkImager
     {
         // used to have one uniqe string per app and mark/sign all resources/images
         private static string applicationKey;
-        public static async Task<string> GetApplicationKey()
+        public static string GetApplicationKey()
         {
             if(applicationKey == null)
             {
@@ -21,7 +21,8 @@ namespace LinkImager
                 if(applicationkey == null)
                 {
                     Azure azure = new Azure();
-                    applicationkey = await azure.GenerateAppKey();
+
+                    applicationkey = azure.GenerateAppKey();
                     // Preferences.Set("appKey", appKey);
                     FreshMvvm.FreshIOC.Container.Resolve<ISettings>().AddOrUpdateValue("appKey", applicationkey);
                 }

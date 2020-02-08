@@ -191,7 +191,7 @@ namespace LinkImager
             }
             Display(nowLinkImage);
             // condition here
-            string applicationKey = await App.GetApplicationKey();
+            string applicationKey = App.GetApplicationKey();
             // Delete from cloud only if is author
             if (applicationKey == movableImage.appKey)
             {
@@ -430,7 +430,7 @@ namespace LinkImager
         };
         private static EventHandler<CachedImageEvents.ErrorEventArgs> Handle_Error = (s, e) =>
         {
-            if(e.Exception is FFImageLoading.DownloadAggregateException) // FFImageLoading.DownloadAggregateException thrown when displaying an image of which url is deleted. Even though it exists in cache
+            if(e.Exception is FFImageLoading.Exceptions.DownloadAggregateException) // FFImageLoading.DownloadAggregateException thrown when displaying an image of which url is deleted. Even though it exists in cache
             {
                 d.ImageUrl = StatusImages.ImageDeleted;
                 WaitForBoundsAsync(c, d);
